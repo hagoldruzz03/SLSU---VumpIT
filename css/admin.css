@@ -8,12 +8,10 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-image: url('BACKGROUND.png');
-    background-repeat: no-repeat;
-    background-size: cover;
     min-height: 100vh;
     overflow-x: hidden;
 }
+
 /* Header Styles */
 .header {
     background: linear-gradient(135deg, #19cb4f 0%, #03ba55 100%);
@@ -1059,10 +1057,4 @@ body {
     .profile-item-value {
         font-size: 18px;
     }
-
 }
-
-
-
-
-
