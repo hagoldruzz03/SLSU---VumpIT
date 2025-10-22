@@ -8,7 +8,9 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #e96d15;
+    background-image: url('elements/background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
     min-height: 100vh;
     overflow-x: hidden;
 }
@@ -1059,5 +1061,6 @@ body {
     }
 
 }
+
 
 
