@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vumpIT - Sports Management System</title>
+    <style>
+      :root {
+        --primary-green: #00d98e;
+        --primary-dark: #00c47a;
+        --bg-gradient-start: #0f1320;
+        --bg-gradient-end: #1a2332;
+        --card-bg: #ffffff;
+        --text-dark: #0f172a;
+        --text-light: #ffffff;
+        --shadow: 0 20px 40px rgba(2, 6, 23, 0.25);
+        --radius: 16px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: radial-gradient(
+            1200px 600px at 10% -10%,
+            rgba(0, 217, 142, 0.15),
+            transparent 60%
+          ),
+          radial-gradient(
+            1000px 500px at 110% 110%,
+            rgba(255, 107, 53, 0.12),
+            transparent 60%
+          ),
+          linear-gradient(
+            135deg,
+            var(--bg-gradient-start) 0%,
+            var(--bg-gradient-end) 100%
+          );
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        width: 100%;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 60px;
+      }
+
+      .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .logo {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+      }
+
+      .logo-text {
+        font-size: 48px;
+        font-weight: bold;
+        color: var(--text-light);
+        letter-spacing: 2px;
+      }
+
+      .tagline {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 18px;
+        margin-top: 10px;
+        letter-spacing: 1px;
+      }
+
+      /* Cards */
+      .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        padding: 40px 30px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--text-dark);
+        border: 2px solid transparent;
+      }
+
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(2, 6, 23, 0.35);
+        border-color: var(--primary-green);
+      }
+
+      .card-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 40px;
+      }
+
+      .admin-card .card-icon {
+        background: linear-gradient(135deg, #ff6b35, #ff8a65);
+        color: white;
+      }
+
+      .coach-card .card-icon {
+        background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+        color: white;
+      }
+
+      .student-card .card-icon {
+        background: linear-gradient(135deg, #00d98e, #00c47a);
+        color: white;
+      }
+
+      .card-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--text-dark);
+      }
+
+      .card-description {
+        color: #64748b;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 25px;
+      }
+
+      .card-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+      }
+
+      .admin-card .card-button {
+        background: linear-gradient(135deg, #ff6b35, #ff8a65);
+        color: white;
+      }
+
+      .coach-card .card-button {
+        background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+        color: white;
+      }
+
+      .student-card .card-button {
+        background: linear-gradient(135deg, #00d98e, #00c47a);
+        color: white;
+      }
+
+      .card-button:hover {
+        transform: scale(1.05);
+      }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        margin-top: 60px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .logo-text {
+          font-size: 36px;
+        }
+
+        .cards-container {
+          grid-template-columns: 1fr;
+        }
+
+        .card {
+          padding: 30px 20px;
+        }
+      }
+
+      /* SVG Icons */
+      .icon-svg {
+        width: 50px;
+        height: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="logo-container">
+          <img
+            src="https://via.placeholder.com/80x80/00d98e/ffffff?text=V"
+            alt="vumpIT Logo"
+            class="logo"
+          />
+          <h1 class="logo-text">vumpIT</h1>
+        </div>
+        <p class="tagline">Sports Performance Management System</p>
+      </header>
+
+      <!-- Cards -->
+      <div class="cards-container">
+        <!-- Admin Card -->
+        <a href="admin.html" class="card admin-card">
+          <div class="card-icon">
+            <svg
+              class="icon-svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          <h2 class="card-title">Administrator</h2>
+          <p class="card-description">
+            Manage users, coaches, students, and system settings. Full access to
+            all platform features.
+          </p>
+          <button class="card-button">
+            Access Admin Portal
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </a>
+
+        <!-- Coach Card -->
+        <a href="coach.html" class="card coach-card">
+          <div class="card-icon">
+            <svg
+              class="icon-svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h2 class="card-title">Coach</h2>
+          <p class="card-description">
+            Track athlete performance, manage classes, and monitor student
+            progress and statistics.
+          </p>
+          <button class="card-button">
+            Access Coach Portal
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </a>
+
+        <!-- Student Card -->
+        <a href="student.html" class="card student-card">
+          <div class="card-icon">
+            <svg
+              class="icon-svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <h2 class="card-title">Student</h2>
+          <p class="card-description">
+            View your profile, track your performance metrics, BMI statistics,
+            and training recommendations.
+          </p>
+          <button class="card-button">
+            Access Student Portal
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </a>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>&copy; 2025 vumpIT Sports Management System. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <script>
+      // Add click animation
+      document.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("click", function (e) {
+          if (!e.target.closest(".card-button")) {
+            const button = this.querySelector(".card-button");
+            button.style.transform = "scale(0.95)";
+            setTimeout(() => {
+              button.style.transform = "scale(1.05)";
+            }, 100);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
