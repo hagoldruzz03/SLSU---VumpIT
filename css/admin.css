@@ -8,12 +8,10 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e96d15; 
-    background: url('/elements/background.png') center center / cover no-repeat fixed;
+    background: #e96d15;
     min-height: 100vh;
     overflow-x: hidden;
 }
-
 /* Header Styles */
 .header {
     background: linear-gradient(135deg, #19cb4f 0%, #03ba55 100%);
@@ -1061,4 +1059,5 @@ body {
     }
 
 }
+
 
