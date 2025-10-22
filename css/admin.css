@@ -8,7 +8,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: url('../elements/background.png') center center / cover no-repeat fixed;
+    background: url('elements/background.png') center center / cover no-repeat fixed;
     min-height: 100vh;
     overflow-x: hidden;
 }
@@ -1058,4 +1058,5 @@ body {
     .profile-item-value {
         font-size: 18px;
     }
+
 }
