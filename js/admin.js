@@ -1,19 +1,183 @@
-// Admin Interface JavaScript - Full Screen Modal Design
-// Handles all admin functionalities with full-screen modals
+// Admin Interface JavaScript - Full Screen Modal Design with Login
+// Handles all admin functionalities with full-screen modals and authentication
 
 // Global variables
+let currentAdmin = null;
 let currentEditUserId = null;
 let selectedUsers = new Set();
 let userToDelete = null;
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    initializeAdmin();
+    checkLoginStatus();
+    setupEventListeners();
+    setupPasswordToggles();
 });
+
+// Setup password toggles
+function setupPasswordToggles() {
+    // Login password toggle
+    const toggleLoginPassword = document.getElementById('toggleLoginPassword');
+    if (toggleLoginPassword) {
+        toggleLoginPassword.addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = this.querySelector('.eye-icon');
+            const eyeOffIcon = this.querySelector('.eye-off-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+        });
+    }
+    
+    // User form password toggle
+    const toggleUserPassword = document.getElementById('toggleUserPassword');
+    if (toggleUserPassword) {
+        toggleUserPassword.addEventListener('click', function() {
+            const passwordInput = document.getElementById('userPassword');
+            const eyeIcon = this.querySelector('.eye-icon');
+            const eyeOffIcon = this.querySelector('.eye-off-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+        });
+    }
+}
+
+// Check login status
+function checkLoginStatus() {
+    const loggedInAdmin = sessionStorage.getItem('loggedInAdmin');
+    if (loggedInAdmin) {
+        currentAdmin = JSON.parse(loggedInAdmin);
+        showDashboard();
+    } else {
+        showLoginModal();
+    }
+}
+
+// Show login modal
+function showLoginModal() {
+    document.getElementById('loginModal').classList.add('active');
+    document.getElementById('dashboard').style.display = 'none';
+}
+
+// Show dashboard
+function showDashboard() {
+    document.getElementById('loginModal').classList.remove('active');
+    document.getElementById('dashboard').style.display = 'block';
+    initializeAdmin();
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Login form
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+    
+    // Logout buttons for new logout confirm modal
+    const closeLogoutConfirmBtn = document.getElementById('closeLogoutConfirmBtn');
+    if (closeLogoutConfirmBtn) {
+        closeLogoutConfirmBtn.addEventListener('click', hideLogoutConfirmModal);
+    }
+    
+    const cancelLogoutConfirmBtn = document.getElementById('cancelLogoutConfirmBtn');
+    if (cancelLogoutConfirmBtn) {
+        cancelLogoutConfirmBtn.addEventListener('click', hideLogoutConfirmModal);
+    }
+    
+    const confirmLogoutConfirmBtn = document.getElementById('confirmLogoutConfirmBtn');
+    if (confirmLogoutConfirmBtn) {
+        confirmLogoutConfirmBtn.addEventListener('click', handleLogout);
+    }
+}
+
+// Handle login
+function handleLogin(e) {
+    e.preventDefault();
+    
+    const adminId = document.getElementById('adminId').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const errorMsg = document.getElementById('loginError');
+    
+    if (typeof DataStore === 'undefined') {
+        if (errorMsg) {
+            errorMsg.textContent = 'Data store not loaded. Please refresh the page.';
+            errorMsg.classList.add('active');
+        }
+        return;
+    }
+    
+    const user = DataStore.getUserById(adminId);
+    
+    if (!user) {
+        if (errorMsg) {
+            errorMsg.textContent = 'Admin ID not found!';
+            errorMsg.classList.add('active');
+        }
+        return;
+    }
+    
+    if (user.user_type !== 'admin') {
+        if (errorMsg) {
+            errorMsg.textContent = 'This account is not an admin account!';
+            errorMsg.classList.add('active');
+        }
+        return;
+    }
+    
+    if (user.password !== password) {
+        if (errorMsg) {
+            errorMsg.textContent = 'Incorrect password!';
+            errorMsg.classList.add('active');
+        }
+        return;
+    }
+    
+    currentAdmin = user;
+    sessionStorage.setItem('loggedInAdmin', JSON.stringify(user));
+    if (errorMsg) {
+        errorMsg.classList.remove('active');
+    }
+    showDashboard();
+}
+
+// Handle logout
+function handleLogout() {
+    currentAdmin = null;
+    sessionStorage.removeItem('loggedInAdmin');
+    hideLogoutConfirmModal();
+    window.location.href = 'index.html';
+}
+
+// Show/Hide logout confirmation modal
+function showLogoutConfirmModal() {
+    document.getElementById('logoutConfirmModal').classList.add('active');
+}
+
+function hideLogoutConfirmModal() {
+    document.getElementById('logoutConfirmModal').classList.remove('active');
+}
 
 // Initialize admin interface
 function initializeAdmin() {
-    const adminName = sessionStorage.getItem('vumpIT_admin_name') || 'ADMIN';
+    if (!currentAdmin) return;
+    
+    const adminName = currentAdmin.user_name || 'ADMIN';
     const welcomeTitle = document.getElementById('welcomeTitle');
     if (welcomeTitle) {
         welcomeTitle.textContent = `Welcome ${adminName.toUpperCase()}`;
@@ -26,57 +190,125 @@ function initializeAdmin() {
 // Attach event listeners
 function attachEventListeners() {
     // Search functionality
-    document.getElementById('searchBtn').addEventListener('click', handleSearch);
-    document.getElementById('searchInput').addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') {
-            handleSearch();
-        }
-    });
+    const searchBtn = document.getElementById('searchBtn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', handleSearch);
+    }
     
-    // Real-time search
-    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+        // Real-time search
+        searchInput.addEventListener('input', handleSearch);
+    }
     
     // Add user button
-    document.getElementById('addBtn').addEventListener('click', openAddUserModal);
+    const addBtn = document.getElementById('addBtn');
+    if (addBtn) {
+        addBtn.addEventListener('click', openAddUserModal);
+    }
     
     // Delete button
-    document.getElementById('deleteBtn').addEventListener('click', openDeleteModal);
+    const deleteBtn = document.getElementById('deleteBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', openDeleteModal);
+    }
     
     // User Modal close buttons
-    document.getElementById('closeModal').addEventListener('click', closeUserModal);
-    document.getElementById('cancelBtn').addEventListener('click', closeUserModal);
+    const closeModal = document.getElementById('closeModal');
+    if (closeModal) {
+        closeModal.addEventListener('click', closeUserModal);
+    }
+    
+    const cancelBtn = document.getElementById('cancelBtn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('userForm').reset();
+        });
+    }
     
     // View Modal close button
-    document.getElementById('closeViewModal').addEventListener('click', closeViewModal);
+    const closeViewModal = document.getElementById('closeViewModal');
+    if (closeViewModal) {
+        closeViewModal.addEventListener('click', closeViewModalFunc);
+    }
     
     // Delete Modal buttons
-    document.getElementById('closeDeleteModal').addEventListener('click', closeDeleteModal);
-    document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
-    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+    const closeDeleteModal = document.getElementById('closeDeleteModal');
+    if (closeDeleteModal) {
+        closeDeleteModal.addEventListener('click', closeDeleteModalFunc);
+    }
     
-    // Logout Modal buttons
-    document.getElementById('closeLogoutModal').addEventListener('click', closeLogoutModal);
-    document.getElementById('cancelLogoutBtn').addEventListener('click', closeLogoutModal);
-    document.getElementById('confirmLogoutBtn').addEventListener('click', confirmLogout);
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', closeDeleteModalFunc);
+    }
+    
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', confirmDelete);
+    }
+    
+    // Logout Modal buttons (old style for compatibility)
+    const closeLogoutModal = document.getElementById('closeLogoutModal');
+    if (closeLogoutModal) {
+        closeLogoutModal.addEventListener('click', closeLogoutModalFunc);
+    }
+    
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+    if (cancelLogoutBtn) {
+        cancelLogoutBtn.addEventListener('click', closeLogoutModalFunc);
+    }
+    
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    if (confirmLogoutBtn) {
+        confirmLogoutBtn.addEventListener('click', confirmLogout);
+    }
     
     // Form submission
-    document.getElementById('userForm').addEventListener('submit', handleFormSubmit);
+    const userForm = document.getElementById('userForm');
+    if (userForm) {
+        userForm.addEventListener('submit', handleFormSubmit);
+    }
     
     // Logout button
-    document.getElementById('logoutBtn').addEventListener('click', openLogoutModal);
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', showLogoutConfirmModal);
+    }
     
     // Close modals on outside click (only for small modals)
-    document.getElementById('deleteModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeDeleteModal();
-        }
-    });
+    const deleteModal = document.getElementById('deleteModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModalFunc();
+            }
+        });
+    }
 
-    document.getElementById('logoutModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeLogoutModal();
-        }
-    });
+    const logoutModal = document.getElementById('logoutModal');
+    if (logoutModal) {
+        logoutModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLogoutModalFunc();
+            }
+        });
+    }
+    
+    const logoutConfirmModal = document.getElementById('logoutConfirmModal');
+    if (logoutConfirmModal) {
+        logoutConfirmModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideLogoutConfirmModal();
+            }
+        });
+    }
 }
 
 // Load and display users
@@ -93,7 +325,7 @@ function loadUsers(searchQuery = '') {
     if (users.length === 0) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="6" class="no-results">
+                <td colspan="7" class="no-results">
                     ${searchQuery ? 'No users found matching your search.' : 'No users available.'}
                 </td>
             </tr>
@@ -123,6 +355,7 @@ function createUserRow(user) {
         <td>${userType}</td>
         <td>${user.sport}</td>
         <td>${college}</td>
+        <td>${user.gender}</td>
         <td>
             <div class="action-cell">
                 <button class="view-btn" onclick="viewUser('${user.user_id}')">View</button>
@@ -146,9 +379,6 @@ function openAddUserModal() {
     document.getElementById('modalTitle').textContent = 'ADD NEW USER';
     document.getElementById('userForm').reset();
     document.getElementById('userId').disabled = false;
-    document.getElementById('userId').placeholder = 'Enter User ID';
-    document.getElementById('userName').placeholder = 'Enter Full Name';
-    document.querySelector('.btn-save').textContent = 'Add User';
     document.getElementById('userModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -157,25 +387,27 @@ function openAddUserModal() {
 function editUser(userId) {
     const user = DataStore.getUserById(userId);
     if (!user) {
-        showNotification('User not found!', 'error');
+        showNotification('✗ User not found!', 'error');
         return;
     }
     
     currentEditUserId = userId;
     document.getElementById('modalTitle').textContent = 'EDIT USER';
     
-    // Populate form
+    // Fill form with user data
     document.getElementById('userId').value = user.user_id;
     document.getElementById('userId').disabled = true;
     document.getElementById('userName').value = user.user_name;
     document.getElementById('userType').value = user.user_type;
     document.getElementById('sport').value = user.sport;
+    document.getElementById('gender').value = user.gender;
+    document.getElementById('userPassword').value = user.password;
     
-    // Set college value
-    const college = user.coach_college || user.user_college || '';
+    // Handle college field
+    const college = user.coach_college || user.user_college;
     const collegeSelect = document.getElementById('college');
     
-    // Check if the college value exists in options
+    // Check if college exists in dropdown
     let collegeExists = false;
     for (let option of collegeSelect.options) {
         if (option.value === college) {
@@ -184,7 +416,7 @@ function editUser(userId) {
         }
     }
     
-    // If college doesn't exist in options, temporarily add it
+    // If college doesn't exist in dropdown, add it temporarily
     if (!collegeExists && college) {
         const newOption = document.createElement('option');
         newOption.value = college;
@@ -193,27 +425,23 @@ function editUser(userId) {
     }
     
     collegeSelect.value = college;
-    document.getElementById('gender').value = user.gender;
-    document.getElementById('password').value = user.password || '';
     
-    document.querySelector('.btn-save').textContent = 'Save Changes';
     document.getElementById('userModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
-// View user with enhanced full-screen display
+// View user
 function viewUser(userId) {
     const user = DataStore.getUserById(userId);
     if (!user) {
-        showNotification('User not found!', 'error');
+        showNotification('✗ User not found!', 'error');
         return;
     }
     
     const college = user.coach_college || user.user_college || 'N/A';
     const userType = capitalizeFirstLetter(user.user_type);
     
-    const viewContent = document.getElementById('viewUserContent');
-    viewContent.innerHTML = `
+    document.getElementById('viewUserContent').innerHTML = `
         <div class="profile-section">
             <h2 class="profile-section-title">Personal Information</h2>
             <div class="profile-grid">
@@ -231,13 +459,13 @@ function viewUser(userId) {
                 </div>
                 <div class="profile-item">
                     <div class="profile-item-label">Gender</div>
-                    <div class="profile-item-value">${user.gender}</div>
+                    <div class="profile-item-value">${capitalizeFirstLetter(user.gender)}</div>
                 </div>
             </div>
         </div>
-        
-        <div class="profile-section">
-            <h2 class="profile-section-title">Sports & College Information</h2>
+
+        <div class="profile-section" style="margin-top: 30px;">
+            <h2 class="profile-section-title">Academic & Sports Information</h2>
             <div class="profile-grid">
                 <div class="profile-item">
                     <div class="profile-item-label">Sport</div>
@@ -247,12 +475,16 @@ function viewUser(userId) {
                     <div class="profile-item-label">College</div>
                     <div class="profile-item-value">${college}</div>
                 </div>
+                <div class="profile-item">
+                    <div class="profile-item-label">Password</div>
+                    <div class="profile-item-value">${user.password}</div>
+                </div>
             </div>
         </div>
-        
+
         ${user.user_type === 'coach' ? `
-            <div class="profile-section">
-                <h2 class="profile-section-title">Coach Information</h2>
+            <div class="profile-section" style="margin-top: 30px;">
+                <h2 class="profile-section-title">Coach Details</h2>
                 <div class="profile-grid">
                     <div class="profile-item">
                         <div class="profile-item-label">Coach ID</div>
@@ -281,7 +513,7 @@ function handleFormSubmit(e) {
         user_type: document.getElementById('userType').value,
         sport: document.getElementById('sport').value.trim(),
         gender: document.getElementById('gender').value,
-        password: document.getElementById('password').value
+        password: document.getElementById('userPassword').value
     };
     
     // Set college field based on user type
@@ -312,13 +544,13 @@ function handleFormSubmit(e) {
         // Check if user ID already exists
         const existingUser = DataStore.getUserById(userData.user_id);
         if (existingUser) {
-            showNotification('✗ User ID already exists! Please use a different ID.', 'error');
+            showNotification('User ID already exists! Please use a different ID.', 'error');
             return;
         }
         
         // Add new user
         DataStore.addUser(userData);
-        showNotification(`✓ User ${userData.user_name} added successfully!`, 'success');
+        showNotification(`User ${userData.user_name} added successfully!`, 'success');
         closeUserModal();
         loadUsers();
     }
@@ -359,7 +591,7 @@ function confirmDelete() {
     
     if (success) {
         showNotification(`✓ User ${user.user_name} deleted successfully!`, 'success');
-        closeDeleteModal();
+        closeDeleteModalFunc();
         loadUsers();
         userToDelete = null;
     } else {
@@ -367,12 +599,7 @@ function confirmDelete() {
     }
 }
 
-// Open logout confirmation modal
-function openLogoutModal() {
-    document.getElementById('logoutModal').classList.add('active');
-}
-
-// Confirm logout
+// Confirm logout (old style)
 function confirmLogout() {
     // Clear session data
     sessionStorage.clear();
@@ -392,10 +619,13 @@ function closeUserModal() {
     // Remove any temporarily added college options
     const collegeSelect = document.getElementById('college');
     const standardColleges = [
-        'College of Engineering',
+        'College of Administration, Business, Hospitality and Accountancy',
+        'College of Agriculture',
+        'College of Allied Medicine',
         'College of Arts and Sciences',
-        'College of Business',
-        'College of Education'
+        'College of Engineering',
+        'College of Industrial Technology',
+        'College of Teacher Education'
     ];
     
     // Remove options that aren't in the standard list
@@ -407,17 +637,17 @@ function closeUserModal() {
     }
 }
 
-function closeViewModal() {
+function closeViewModalFunc() {
     document.getElementById('viewModal').classList.remove('active');
     document.body.style.overflow = 'auto';
 }
 
-function closeDeleteModal() {
+function closeDeleteModalFunc() {
     document.getElementById('deleteModal').classList.remove('active');
     userToDelete = null;
 }
 
-function closeLogoutModal() {
+function closeLogoutModalFunc() {
     document.getElementById('logoutModal').classList.remove('active');
 }
 
@@ -467,13 +697,19 @@ document.addEventListener('keydown', function(e) {
             closeUserModal();
         }
         if (document.getElementById('viewModal').classList.contains('active')) {
-            closeViewModal();
+            closeViewModalFunc();
         }
         if (document.getElementById('deleteModal').classList.contains('active')) {
-            closeDeleteModal();
+            closeDeleteModalFunc();
         }
         if (document.getElementById('logoutModal').classList.contains('active')) {
-            closeLogoutModal();
+            closeLogoutModalFunc();
+        }
+        if (document.getElementById('logoutConfirmModal').classList.contains('active')) {
+            hideLogoutConfirmModal();
+        }
+        if (document.getElementById('loginModal').classList.contains('active')) {
+            // Don't close login modal on Escape
         }
     }
 });
