@@ -5,121 +5,285 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>vumpIT - Admin Dashboard</title>
     <link rel="stylesheet" href="css/admin.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body
     style="
-      background: url('elements/BACKGROUND.png') center center / cover
-        no-repeat fixed;
-      min-height: 100vh;
-      overflow-x: hidden;
+      background: url('elements/background.png') center center / cover no-repeat
+        fixed;
     "
   >
-    <!-- Header -->
-    <header class="header">
-      <div class="logo-container">
-        <img
-          src="elements/LOGO.png"
-          alt="vumpIT Logo"
-          class="logo"
-          style="width: 150px; height: 80px; object-fit: contain"
-        />
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content login-modal">
+        <div class="login-header">
+          <div class="login-logo-container">
+            <img
+              src="elements/slsu-logo.png"
+              alt="vumpIT Logo"
+              class="login-logo"
+            />
+          </div>
+          <h2>Admin Portal</h2>
+          <p>Sign in to access your dashboard</p>
+        </div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="adminId">Admin ID</label>
+            <input
+              type="text"
+              id="adminId"
+              required
+              placeholder="Enter your Admin ID"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-input-wrapper">
+              <input
+                type="password"
+                id="password"
+                required
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                class="password-toggle-btn"
+                id="toggleLoginPassword"
+                aria-label="Toggle password visibility"
+              >
+                <svg
+                  class="eye-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg
+                  class="eye-off-icon"
+                  style="display: none"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                  ></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign In</button>
+          <div id="loginError" class="error-message"></div>
+        </form>
+        <div class="login-footer">
+          <a href="index.html">← Back to Home</a>
+        </div>
       </div>
-      <button class="logout-btn" id="logoutBtn">
-        <svg
-          class="logout-icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-          <polyline points="16 17 21 12 16 7"></polyline>
-          <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
-        Log Out
-      </button>
-    </header>
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Welcome Section -->
-      <section class="welcome-section">
-        <h1 class="welcome-title" id="welcomeTitle">Welcome ADMIN</h1>
-        <h2 class="section-subtitle">LOCATE USER PROFILE</h2>
-      </section>
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutConfirmModal" class="modal">
+      <div class="modal-content logout-modal">
+        <div class="logout-modal-header">
+          <h2 class="logout-modal-title">
+            <div class="logout-modal-title-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+            </div>
+            Confirm Logout
+          </h2>
+          <button class="logout-close-btn" id="closeLogoutConfirmBtn">
+            &times;
+          </button>
+        </div>
+        <div class="logout-modal-body-wrapper">
+          <div class="logout-modal-body">
+            <div class="logout-icon-large">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+            </div>
+            <p class="logout-main-text">Ready to leave?</p>
+            <p class="logout-sub-text">
+              You will be redirected to the home page.
+            </p>
+          </div>
+          <div class="logout-modal-actions">
+            <button class="btn btn-cancel-logout" id="cancelLogoutConfirmBtn">
+              <svg
+                class="btn-icon-small"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              Stay
+            </button>
+            <button class="btn btn-confirm-logout" id="confirmLogoutConfirmBtn">
+              <svg
+                class="btn-icon-small"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <!-- Enhanced Search and Action Bar -->
-      <div class="search-action-bar">
-        <div class="search-container">
-          <input
-            type="text"
-            class="search-input"
-            id="searchInput"
-            placeholder="Enter user ID, name, sport, user type, etc."
+    <!-- Dashboard Container (Hidden until login) -->
+    <div id="dashboard" style="display: none">
+      <!-- Header -->
+      <header class="header">
+        <div class="logo-container">
+          <img
+            src="elements/LOGO.png"
+            alt="vumpIT Logo"
+            class="logo"
+            style="width: 150px; height: 80px; object-fit: contain"
           />
-          <button class="search-btn" id="searchBtn">
-            <svg
-              class="search-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-          </button>
         </div>
-        <div class="action-buttons">
-          <button class="add-btn" id="addBtn" title="Add User">
-            <svg
-              class="btn-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="3"
-            >
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </button>
-          <button class="delete-btn" id="deleteBtn" title="Delete Selected">
-            <svg
-              class="btn-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path
-                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-              ></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
-            </svg>
-          </button>
-        </div>
-      </div>
+        <button class="logout-btn" id="logoutBtn">
+          <svg
+            class="logout-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Log Out
+        </button>
+      </header>
 
-      <!-- User Table -->
-      <div class="table-container">
-        <table class="user-table">
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Name</th>
-              <th>User Type</th>
-              <th>Sport</th>
-              <th>College</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="userTableBody">
-            <!-- Table rows will be dynamically generated -->
-          </tbody>
-        </table>
-      </div>
-    </main>
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Fixed Top Section -->
+        <div class="fixed-top-section">
+          <!-- Welcome Section -->
+          <section class="welcome-section">
+            <h1 class="welcome-title" id="welcomeTitle">Welcome ADMIN</h1>
+            <h2 class="section-subtitle">LOCATE USER PROFILE</h2>
+          </section>
+
+          <!-- Enhanced Search and Action Bar -->
+          <div class="search-action-bar">
+            <div class="search-container">
+              <input
+                type="text"
+                class="search-input"
+                id="searchInput"
+                placeholder="Enter user ID, name, sport, user type, etc."
+              />
+              <button class="search-btn" id="searchBtn">
+                <svg
+                  class="search-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="action-buttons">
+              <button class="add-btn" id="addBtn" title="Add User">
+                <svg
+                  class="btn-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <line x1="19" y1="8" x2="19" y2="14"></line>
+                  <line x1="22" y1="11" x2="16" y2="11"></line>
+                </svg>
+                <span>Add User</span>
+              </button>
+              <button class="delete-btn" id="deleteBtn" title="Delete User">
+                <svg
+                  class="btn-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  ></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+                <span>Delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Table Section -->
+        <div class="scrollable-table-section">
+          <div class="table-container">
+            <table class="user-table">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Sport</th>
+                  <th>College</th>
+                  <th>Gender</th>
+                  <th class="actions-col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody">
+                <!-- User rows will be dynamically inserted here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
 
     <!-- Add/Edit User Modal - Full Screen Design -->
     <div class="modal-fullscreen" id="userModal">
@@ -145,52 +309,52 @@
 
         <form id="userForm" class="modal-fullscreen-form">
           <div class="form-field">
-            <label class="form-field-label">User ID</label>
+            <label class="form-field-label" for="userId">User ID</label>
             <input
               type="text"
               class="form-field-input"
               id="userId"
-              placeholder="Enter User ID"
               required
+              placeholder="Enter user ID"
             />
           </div>
 
           <div class="form-field">
-            <label class="form-field-label">Full Name</label>
+            <label class="form-field-label" for="userName">Full Name</label>
             <input
               type="text"
               class="form-field-input"
               id="userName"
-              placeholder="Enter Full Name"
               required
+              placeholder="Enter full name"
             />
           </div>
 
           <div class="form-field">
-            <label class="form-field-label">User Type</label>
+            <label class="form-field-label" for="userType">User Type</label>
             <select class="form-field-select" id="userType" required>
-              <option value="">Select User Type</option>
-              <option value="admin">Admin</option>
+              <option value="">Select user type</option>
+              <option value="athlete">Athlete</option>
               <option value="coach">Coach</option>
-              <option value="student">Student</option>
+              <option value="admin">Admin</option>
             </select>
           </div>
 
           <div class="form-field">
-            <label class="form-field-label">Sport</label>
+            <label class="form-field-label" for="sport">Sport</label>
             <input
               type="text"
               class="form-field-input"
               id="sport"
-              placeholder="Enter Sport"
               required
+              placeholder="Enter sport"
             />
           </div>
 
           <div class="form-field">
-            <label class="form-field-label">College</label>
+            <label class="form-field-label" for="college">College</label>
             <select class="form-field-select" id="college" required>
-              <option value="">Select College</option>
+              <option value="">Select college</option>
               <option
                 value="College of Administration, Business, Hospitality and Accountancy"
               >
@@ -218,24 +382,55 @@
           </div>
 
           <div class="form-field">
-            <label class="form-field-label">Gender</label>
+            <label class="form-field-label" for="gender">Gender</label>
             <select class="form-field-select" id="gender" required>
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
+              <option value="">Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
           </div>
 
           <div class="form-field">
-            <label class="form-field-label">Password</label>
-            <input
-              type="password"
-              class="form-field-input"
-              id="password"
-              placeholder="Enter Password"
-              required
-            />
+            <label class="form-field-label" for="userPassword">Password</label>
+            <div class="password-input-wrapper">
+              <input
+                type="password"
+                class="form-field-input"
+                id="userPassword"
+                required
+                placeholder="Enter password"
+              />
+              <button
+                type="button"
+                class="password-toggle-btn"
+                id="toggleUserPassword"
+                aria-label="Toggle password visibility"
+              >
+                <svg
+                  class="eye-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg
+                  class="eye-off-icon"
+                  style="display: none"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                  ></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div class="form-actions-fullscreen">
@@ -378,7 +573,7 @@
       </div>
     </div>
 
-    <!-- Enhanced Logout Confirmation Modal -->
+    <!-- Enhanced Logout Confirmation Modal (Old Style - keeping for compatibility) -->
     <div class="modal" id="logoutModal">
       <div class="modal-content modal-confirm">
         <div class="modal-header">
@@ -462,4 +657,3 @@
     <script src="js/admin.js"></script>
   </body>
 </html>
-
