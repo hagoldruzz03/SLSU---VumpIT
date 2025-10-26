@@ -244,7 +244,7 @@ function initializeAdmin() {
     const adminName = currentAdmin.user_name || 'ADMIN';
     const welcomeTitle = document.getElementById('welcomeTitle');
     if (welcomeTitle) {
-        welcomeTitle.textContent = `Welcome ${adminName.toUpperCase()}`;
+        welcomeTitle.textContent = `Welcome, ${adminName.toUpperCase()}`;
     }
     
     loadUsers();
@@ -840,4 +840,5 @@ document.addEventListener('keydown', function(e) {
 
 // Make functions globally accessible
 window.editUser = editUser;
+
 window.viewUser = viewUser;
