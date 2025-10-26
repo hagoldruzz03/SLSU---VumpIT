@@ -1,5 +1,5 @@
 // Unified Login System for vumpIT
-// Routes users to appropriate interface based on user type (Coach & Student only)
+// Routes users to appropriate interface based on user type (Coach, Student, and Admin)
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -231,7 +231,7 @@ function handleAutoLogin(userId) {
     // Determine user type
     let userType = user.user_type ? user.user_type.toLowerCase() : '';
     
-    // Handle authentication based on user type (Coach & Student only)
+    // Handle authentication based on user type (Coach, Student, and Admin)
     if (userType === 'coach') {
         // Coach login successful
         showVerificationModal('success', 'Login successful! Redirecting...');
@@ -249,8 +249,12 @@ function handleAutoLogin(userId) {
         }, 1000);
         
     } else if (userType === 'admin') {
-        // Block admin login
-        showVerificationModal('error', 'Admin access restricted');
+        // Admin login successful - automatically log in
+        showVerificationModal('success', 'Admin login successful! Redirecting...');
+        sessionStorage.setItem('loggedInAdmin', JSON.stringify(user));
+        setTimeout(() => {
+            showLoadingAndRedirect('admin', userId);
+        }, 1000);
         
     } else {
         showVerificationModal('error', 'Invalid user type');
@@ -316,9 +320,10 @@ function hideVerificationModal() {
 
 // Check if user has an existing session
 function checkExistingSession() {
-    // Check for existing sessions (excluding admin)
+    // Check for existing sessions (including admin)
     const loggedInCoach = sessionStorage.getItem('loggedInCoach');
     const loggedInStudent = sessionStorage.getItem('loggedInStudent');
+    const loggedInAdmin = sessionStorage.getItem('loggedInAdmin');
     
     if (loggedInCoach) {
         const coach = JSON.parse(loggedInCoach);
@@ -329,6 +334,12 @@ function checkExistingSession() {
     if (loggedInStudent) {
         const studentId = loggedInStudent;
         redirectToInterface('student', studentId);
+        return;
+    }
+    
+    if (loggedInAdmin) {
+        const admin = JSON.parse(loggedInAdmin);
+        redirectToInterface('admin', admin.user_id);
         return;
     }
 }
@@ -365,6 +376,9 @@ function redirectToInterface(interfaceType, userId) {
         case 'student':
             window.location.href = 'student.html';
             break;
+        case 'admin':
+            window.location.href = 'admin.html';
+            break;
         default:
             showVerificationModal('error', 'Unable to determine user interface');
             resetLoadingState();
@@ -391,7 +405,8 @@ function getUserTypeDisplayName(userType) {
     const types = {
         'coach': 'Coach',
         'student': 'Student',
-        'athlete': 'Athlete'
+        'athlete': 'Athlete',
+        'admin': 'Admin'
     };
     
     return types[userType.toLowerCase()] || userType;
