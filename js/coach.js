@@ -10,6 +10,72 @@ let bmiChart = null;
 let jumpChart = null;
 let pendingDeleteAction = null;
 
+// College and Course mapping
+const collegeCoursesMap = {
+    'College of Agriculture': [
+        'Bachelor of Science in Agriculture (major in Animal Science)',
+        'Bachelor of Science in Agriculture (major in Crop Science)',
+        'Bachelor of Science in Agriculture (major in Organic Agriculture)',
+        'Bachelor of Science in Forestry',
+        'Bachelor of Science in Environmental Science'
+    ],
+    'College of Allied Medicine': [
+        'Bachelor of Science in Nursing',
+        'Bachelor of Science in Radiologic Technology',
+        'Diploma in Midwifery'
+    ],
+    'College of Arts & Sciences': [
+        'Bachelor of Arts in Communication',
+        'Bachelor of Arts in History',
+        'Bachelor of Arts in Psychology',
+        'Bachelor of Science in Biology',
+        'Bachelor of Science in Mathematics'
+    ],
+    'College of Administration, Business, Hospitality Management & Accountancy': [
+        'Bachelor of Science in Accountancy',
+        'Bachelor of Science in Business Administration (major in Financial Management)',
+        'Bachelor of Science in Business Administration (major in Marketing Management)',
+        'Bachelor of Science in Business Administration (major in Human Resource Management)',
+        'Bachelor of Science in Hospitality Management',
+        'Bachelor of Public Administration'
+    ],
+    'College of Engineering': [
+        'Bachelor of Science in Civil Engineering',
+        'Bachelor of Science in Computer Engineering',
+        'Bachelor of Science in Electrical Engineering',
+        'Bachelor of Science in Electronics Engineering',
+        'Bachelor of Science in Industrial Engineering',
+        'Bachelor of Science in Mechanical Engineering'
+    ],
+    'College of Teacher Education': [
+        'Bachelor of Elementary Education',
+        'Bachelor of Secondary Education (major in English)',
+        'Bachelor of Secondary Education (major in Filipino)',
+        'Bachelor of Secondary Education (major in Mathematics)',
+        'Bachelor of Secondary Education (major in Science)',
+        'Bachelor of Secondary Education (major in Social Studies)',
+        'Bachelor of Technology and Livelihood Education (major in Home Economics)',
+        'Bachelor of Technology and Livelihood Education (major in ICT)',
+        'Bachelor of Technology and Livelihood Education (major in Industrial Arts)',
+        'Bachelor of Science in Exercise and Sports Sciences'
+    ],
+    'College of Industrial Technology': [
+        'Bachelor in Industrial Technology (major in Automotive)',
+        'Bachelor in Industrial Technology (major in Computer)',
+        'Bachelor in Industrial Technology (major in Electrical)',
+        'Bachelor in Industrial Technology (major in Electronics)',
+        'Bachelor in Industrial Technology (major in Apparel & Fashion)',
+        'Bachelor in Industrial Technology (major in Print Media)',
+        'Bachelor in Industrial Technology (major in Mechanical)',
+        'Bachelor in Industrial Technology (major in Culinary Technology)',
+        'Bachelor of Science in Information Technology'
+    ],
+    'Institute of Human Kinetics': [
+        'Bachelor of Science in Exercise and Sports Sciences',
+        'Bachelor of Physical Education (major in Sports and Wellness Management)'
+    ]
+};
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     checkLoginStatus();
@@ -94,10 +160,96 @@ function hideNotification(modalId) {
     if (modal) modal.classList.remove('active');
 }
 
+// Inline validation for User ID field
+function showUserIdError(inputId, message) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    
+    // Add error styling to input
+    input.style.borderColor = '#ef4444';
+    input.style.borderWidth = '2px';
+    
+    // Remove existing error message if any
+    const existingError = input.parentNode.querySelector('.user-id-error');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Create and insert error message
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'user-id-error';
+    errorDiv.style.color = '#ef4444';
+    errorDiv.style.fontSize = '12px';
+    errorDiv.style.fontWeight = '600';
+    errorDiv.style.marginTop = '6px';
+    errorDiv.style.display = 'flex';
+    errorDiv.style.alignItems = 'center';
+    errorDiv.style.gap = '4px';
+    errorDiv.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>${message}</span>
+    `;
+    
+    input.parentNode.appendChild(errorDiv);
+}
+
+function clearUserIdError(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    
+    // Remove error styling
+    input.style.borderColor = '';
+    input.style.borderWidth = '';
+    
+    // Remove error message
+    const existingError = input.parentNode.querySelector('.user-id-error');
+    if (existingError) {
+        existingError.remove();
+    }
+}
+
+function validateUserId(inputId, originalUserId = null) {
+    const input = document.getElementById(inputId);
+    if (!input) return true;
+    
+    const userId = input.value.trim();
+    
+    // Clear previous errors
+    clearUserIdError(inputId);
+    
+    // If editing and user ID hasn't changed, it's valid
+    if (originalUserId && userId === originalUserId) {
+        return true;
+    }
+    
+    // Check if user ID already exists
+    const existingUser = DataStore.getUserById(userId);
+    if (existingUser) {
+        showUserIdError(inputId, 'User ID already exists');
+        return false;
+    }
+    
+    return true;
+}
+
 // Generate Training Recommendations Based on Jump Stats
 function generateRecommendations(student) {
     const gender = student.gender;
     const jumpHeight = student.current_vertical_jump || student.current_jump_height || 0;
+    
+    // Check if there's valid jump data
+    if (!jumpHeight || jumpHeight === 0) {
+        return {
+            training_focus: 'No data available',
+            plyometric: 'No data available',
+            recovery: 'No data available',
+            remarks: 'No data available'
+        };
+    }
     
     // Get the most recent jump rating or calculate it
     let rating = student.current_jump_rating;
@@ -318,6 +470,98 @@ function setupEventListeners() {
             e.target.classList.remove('active');
         }
     });
+    
+    // Setup college-course dropdowns for class form
+    const classCollegeSelect = document.getElementById('classCollege');
+    if (classCollegeSelect) {
+        classCollegeSelect.addEventListener('change', function() {
+            updateClassCourseDropdown(this.value);
+        });
+    }
+    
+    // Setup college-course dropdowns for student form
+    const studentCollegeSelect = document.getElementById('studentCollege');
+    if (studentCollegeSelect) {
+        studentCollegeSelect.addEventListener('change', function() {
+            updateStudentCourseDropdown(this.value);
+        });
+    }
+    
+    // Real-time validation for User ID field in student form
+    const studentUserIdInput = document.getElementById('studentUserId');
+    if (studentUserIdInput) {
+        studentUserIdInput.addEventListener('input', function() {
+            const editIdEl = document.getElementById('editStudentId');
+            const originalUserId = editIdEl ? editIdEl.value : null;
+            
+            // Only validate if there's actual input
+            if (this.value.trim()) {
+                validateUserId('studentUserId', originalUserId);
+            } else {
+                clearUserIdError('studentUserId');
+            }
+        });
+        
+        studentUserIdInput.addEventListener('blur', function() {
+            const editIdEl = document.getElementById('editStudentId');
+            const originalUserId = editIdEl ? editIdEl.value : null;
+            
+            if (this.value.trim()) {
+                validateUserId('studentUserId', originalUserId);
+            }
+        });
+    }
+}
+
+// Update course dropdown for class form based on selected college
+function updateClassCourseDropdown(selectedCollege) {
+    const courseInput = document.getElementById('classCourse');
+    if (!courseInput) return;
+    
+    // Convert input to select if not already
+    if (courseInput.tagName !== 'SELECT') {
+        const selectElement = document.createElement('select');
+        selectElement.id = 'classCourse';
+        selectElement.required = true;
+        courseInput.parentNode.replaceChild(selectElement, courseInput);
+    }
+    
+    const courseSelect = document.getElementById('classCourse');
+    courseSelect.innerHTML = '<option value="">Select Course</option>';
+    
+    if (selectedCollege && collegeCoursesMap[selectedCollege]) {
+        collegeCoursesMap[selectedCollege].forEach(course => {
+            const option = document.createElement('option');
+            option.value = course;
+            option.textContent = course;
+            courseSelect.appendChild(option);
+        });
+    }
+}
+
+// Update course dropdown for student form based on selected college
+function updateStudentCourseDropdown(selectedCollege) {
+    const courseInput = document.getElementById('studentCourse');
+    if (!courseInput) return;
+    
+    // Convert input to select if not already
+    if (courseInput.tagName !== 'SELECT') {
+        const selectElement = document.createElement('select');
+        selectElement.id = 'studentCourse';
+        courseInput.parentNode.replaceChild(selectElement, courseInput);
+    }
+    
+    const courseSelect = document.getElementById('studentCourse');
+    courseSelect.innerHTML = '<option value="">Select Course</option>';
+    
+    if (selectedCollege && collegeCoursesMap[selectedCollege]) {
+        collegeCoursesMap[selectedCollege].forEach(course => {
+            const option = document.createElement('option');
+            option.value = course;
+            option.textContent = course;
+            courseSelect.appendChild(option);
+        });
+    }
 }
 
 // Show logout confirmation modal
@@ -563,7 +807,7 @@ function filterClasses(query) {
                         <p><strong>Course:</strong> ${cls.course}</p>
                         <p><strong>Year Level:</strong> ${cls.year}</p>
                         <p><strong>Section:</strong> ${cls.section}</p>
-                        <p><strong>Students:</strong> ${studentsInClass.length}</p>
+                        <p><strong>Students:</strong<p><strong>Students:</strong> ${studentsInClass.length}</p>
                     </div>
                 </div>
                 <div class="class-card-footer">
@@ -844,32 +1088,62 @@ function loadStudentProfile() {
         const jumpHeight = student.current_vertical_jump || student.current_jump_height || 0;
         const jumpRating = student.current_jump_rating || 'N/A';
         
-        recommendationsContent.innerHTML = `
-            <div class="profile-recommendations">
-                <div class="profile-recommendation-item" style="background: linear-gradient(135deg, rgba(0, 217, 142, 0.1) 0%, rgba(0, 180, 119, 0.05) 100%); border-left: 4px solid #00d98e;">
-                    <span class="profile-recommendation-title">Current Performance Level</span>
-                    <p class="profile-recommendation-text" style="font-size: 16px; font-weight: 600; color: #00d98e;">
-                        ${jumpRating} (Jump Height: ${jumpHeight} cm)
-                    </p>
+        // Check if there's valid data
+        if (!jumpHeight || jumpHeight === 0 || recommendations.training_focus === 'No data available') {
+            recommendationsContent.innerHTML = `
+                <div class="profile-recommendations">
+                    <div class="profile-recommendation-item" style="background: linear-gradient(135deg, rgba(100, 116, 139, 0.1) 0%, rgba(71, 85, 105, 0.05) 100%); border-left: 4px solid #64748b;">
+                        <span class="profile-recommendation-title">Current Performance Level</span>
+                        <p class="profile-recommendation-text" style="font-size: 16px; font-weight: 600; color: #64748b;">
+                            No data available
+                        </p>
+                    </div>
+                    <div class="profile-recommendation-item">
+                        <span class="profile-recommendation-title">🎯 Training Focus</span>
+                        <p class="profile-recommendation-text">No data available. Student needs to record jump statistics first.</p>
+                    </div>
+                    <div class="profile-recommendation-item">
+                        <span class="profile-recommendation-title">💪 Plyometric Exercises</span>
+                        <p class="profile-recommendation-text">No data available. Student needs to record jump statistics first.</p>
+                    </div>
+                    <div class="profile-recommendation-item">
+                        <span class="profile-recommendation-title">🔄 Recovery Methods</span>
+                        <p class="profile-recommendation-text">No data available. Student needs to record jump statistics first.</p>
+                    </div>
+                    <div class="profile-recommendation-item">
+                        <span class="profile-recommendation-title">📝 Additional Remarks</span>
+                        <p class="profile-recommendation-text">No data available. Student needs to record jump statistics first.</p>
+                    </div>
                 </div>
-                <div class="profile-recommendation-item">
-                    <span class="profile-recommendation-title">🎯 Training Focus</span>
-                    <p class="profile-recommendation-text">${student.training_focus}</p>
+            `;
+        } else {
+            recommendationsContent.innerHTML = `
+                <div class="profile-recommendations">
+                    <div class="profile-recommendation-item" style="background: linear-gradient(135deg, rgba(0, 217, 142, 0.1) 0%, rgba(0, 180, 119, 0.05) 100%); border-left: 4px solid #00d98e;">
+                        <span class="profile-recommendation-title">Current Performance Level</span>
+                        <p class="profile-recommendation-text" style="font-size: 16px; font-weight: 600; color: #00d98e;">
+                            ${jumpRating} (Jump Height: ${jumpHeight} cm)
+                        </p>
+                    </div>
+                    <div class="profile-recommendation-item">
+                        <span class="profile-recommendation-title">🎯 Training Focus</span>
+                        <p class="profile-recommendation-text">${student.training_focus}</p>
+                    </div>
+                    <div class="profile-recommendation-item">
+                        <span class="profile-recommendation-title">💪 Plyometric Exercises</span>
+                        <p class="profile-recommendation-text">${student.plyometric}</p>
+                    </div>
+                    <div class="profile-recommendation-item">
+                        <span class="profile-recommendation-title">🔄 Recovery Methods</span>
+                        <p class="profile-recommendation-text">${student.recovery}</p>
+                    </div>
+                    <div class="profile-recommendation-item">
+                        <span class="profile-recommendation-title">📝 Additional Remarks</span>
+                        <p class="profile-recommendation-text">${student.remarks}</p>
+                    </div>
                 </div>
-                <div class="profile-recommendation-item">
-                    <span class="profile-recommendation-title">💪 Plyometric Exercises</span>
-                    <p class="profile-recommendation-text">${student.plyometric}</p>
-                </div>
-                <div class="profile-recommendation-item">
-                    <span class="profile-recommendation-title">🔄 Recovery Methods</span>
-                    <p class="profile-recommendation-text">${student.recovery}</p>
-                </div>
-                <div class="profile-recommendation-item">
-                    <span class="profile-recommendation-title">📝 Additional Remarks</span>
-                    <p class="profile-recommendation-text">${student.remarks}</p>
-                </div>
-            </div>
-        `;
+            `;
+        }
     }
 }
 
@@ -881,6 +1155,7 @@ function createBMIChart(student) {
     // Destroy existing chart
     if (bmiChart) {
         bmiChart.destroy();
+        bmiChart = null;
     }
     
     const ctx = canvas.getContext('2d');
@@ -889,6 +1164,8 @@ function createBMIChart(student) {
     const bmiHistory = student.bmi_history || [];
     
     if (bmiHistory.length === 0) {
+        // Clear canvas and show message
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#64748b';
         ctx.font = '14px Inter';
         ctx.textAlign = 'center';
@@ -977,6 +1254,7 @@ function createJumpChart(student) {
     // Destroy existing chart
     if (jumpChart) {
         jumpChart.destroy();
+        jumpChart = null;
     }
     
     const ctx = canvas.getContext('2d');
@@ -985,6 +1263,8 @@ function createJumpChart(student) {
     const jumpHistory = student.jump_history || [];
     
     if (jumpHistory.length === 0) {
+        // Clear canvas and show message
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#64748b';
         ctx.font = '14px Inter';
         ctx.textAlign = 'center';
@@ -1147,6 +1427,17 @@ function openClassModal(classId = null) {
         editClassIdEl.value = '';
     }
     
+    // Reset course dropdown to input
+    const classCourseEl = document.getElementById('classCourse');
+    if (classCourseEl && classCourseEl.tagName === 'SELECT') {
+        const inputElement = document.createElement('input');
+        inputElement.type = 'text';
+        inputElement.id = 'classCourse';
+        inputElement.required = true;
+        inputElement.placeholder = 'Enter Course';
+        classCourseEl.parentNode.replaceChild(inputElement, classCourseEl);
+    }
+    
     if (classId) {
         const cls = DataStore.getClassById(classId);
         if (cls) {
@@ -1157,10 +1448,17 @@ function openClassModal(classId = null) {
             if (classNameEl) classNameEl.value = cls.class_name;
             
             const classCollegeEl = document.getElementById('classCollege');
-            if (classCollegeEl) classCollegeEl.value = cls.user_college;
+            if (classCollegeEl) {
+                classCollegeEl.value = cls.user_college;
+                // Trigger course dropdown update
+                updateClassCourseDropdown(cls.user_college);
+            }
             
-            const classCourseEl = document.getElementById('classCourse');
-            if (classCourseEl) classCourseEl.value = cls.course;
+            // Set course after dropdown is updated
+            setTimeout(() => {
+                const classCourseEl = document.getElementById('classCourse');
+                if (classCourseEl) classCourseEl.value = cls.course;
+            }, 100);
             
             const classYearEl = document.getElementById('classYear');
             if (classYearEl) classYearEl.value = cls.year;
@@ -1251,6 +1549,19 @@ function openStudentModal(studentId = null, context = 'athlete') {
         editStudentIdEl.value = '';
     }
     
+    // Clear any existing validation errors
+    clearUserIdError('studentUserId');
+    
+    // Reset course dropdown to input
+    const studentCourseEl = document.getElementById('studentCourse');
+    if (studentCourseEl && studentCourseEl.tagName === 'SELECT') {
+        const inputElement = document.createElement('input');
+        inputElement.type = 'text';
+        inputElement.id = 'studentCourse';
+        inputElement.placeholder = 'Enter Course';
+        studentCourseEl.parentNode.replaceChild(inputElement, studentCourseEl);
+    }
+    
     if (studentId) {
         const student = DataStore.getStudentById(studentId);
         if (student) {
@@ -1266,24 +1577,32 @@ function openStudentModal(studentId = null, context = 'athlete') {
             
             // Academic Information
             setValue('studentCollege', student.user_college);
-            setValue('studentCourse', student.course);
+            
+            // Trigger course dropdown update and set course
+            if (student.user_college) {
+                updateStudentCourseDropdown(student.user_college);
+                setTimeout(() => {
+                    setValue('studentCourse', student.course);
+                }, 100);
+            }
+            
             setValue('studentYear', student.year);
             setValue('studentSection', student.section);
             
             // BMI Statistics
-            setValue('studentWeight', student.current_weight);
-            setValue('studentHeight', student.current_height);
-            setValue('studentBMI', student.current_bmi);
-            setValue('studentBMIRating', student.current_bmi_rating);
-            setValue('studentBMIDate', student.updated_bmi_date);
+            setValue('studentWeight', student.current_weight || '');
+            setValue('studentHeight', student.current_height || '');
+            setValue('studentBMI', student.current_bmi || '');
+            setValue('studentBMIRating', student.current_bmi_rating || '');
+            setValue('studentBMIDate', student.updated_bmi_date || '');
             
             // Jump Height Statistics
-            setValue('studentStandingReach', student.current_standing_reach);
-            setValue('studentJumpReach', student.current_jump_reach);
-            setValue('studentJumpHeight', student.current_jump_height);
-            setValue('studentVerticalJump', student.current_vertical_jump);
-            setValue('studentJumpRating', student.current_jump_rating);
-            setValue('studentJumpDate', student.updated_jump_date);
+            setValue('studentStandingReach', student.current_standing_reach || '');
+            setValue('studentJumpReach', student.current_jump_reach || '');
+            setValue('studentJumpHeight', student.current_jump_height || '');
+            setValue('studentVerticalJump', student.current_vertical_jump || '');
+            setValue('studentJumpRating', student.current_jump_rating || '');
+            setValue('studentJumpDate', student.updated_jump_date || '');
             
             // Training Recommendations - Auto-generate based on current stats
             const recommendations = generateRecommendations(student);
@@ -1303,7 +1622,10 @@ function openStudentModal(studentId = null, context = 'athlete') {
             const cls = DataStore.getClassById(currentClassId);
             if (cls) {
                 setValue('studentCollege', cls.user_college);
-                setValue('studentCourse', cls.course);
+                updateStudentCourseDropdown(cls.user_college);
+                setTimeout(() => {
+                    setValue('studentCourse', cls.course);
+                }, 100);
                 setValue('studentYear', cls.year);
                 setValue('studentSection', cls.section);
             }
@@ -1355,7 +1677,25 @@ function handleStudentSubmit(e) {
     const editIdEl = document.getElementById('editStudentId');
     const editId = editIdEl ? editIdEl.value : '';
     
-    const userId = document.getElementById('studentUserId').value.trim();
+    const userIdEl = document.getElementById('studentUserId');
+    if (!userIdEl) {
+        showErrorNotification('Error!', 'User ID field is missing!');
+        return;
+    }
+    
+    const userId = userIdEl.value.trim();
+    
+    if (!userId) {
+        showUserIdError('studentUserId', 'User ID is required');
+        return;
+    }
+    
+    // Validate User ID
+    if (!validateUserId('studentUserId', editId)) {
+        // Focus on the input field
+        userIdEl.focus();
+        return;
+    }
     
     const studentData = {
         user_id: userId,
@@ -1373,6 +1713,7 @@ function handleStudentSubmit(e) {
     };
     
     if (editId) {
+        // Editing existing student
         // Get existing student to preserve history AND BMI/Jump statistics
         const existingStudent = DataStore.getStudentById(editId);
         if (existingStudent) {
@@ -1405,13 +1746,7 @@ function handleStudentSubmit(e) {
         DataStore.updateStudent(editId, studentData);
         showSuccessNotification('Success!', 'Student updated successfully.');
     } else {
-        // Check if user already exists
-        const existingUser = DataStore.getUserById(userId);
-        if (existingUser) {
-            showErrorNotification('Error!', 'User ID already exists!');
-            return;
-        }
-        
+        // Adding new student
         // Initialize empty history arrays and null statistics for new students
         studentData.bmi_history = [];
         studentData.jump_history = [];
@@ -1460,5 +1795,10 @@ function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove('active');
+    }
+    
+    // Clear validation errors when closing student modal
+    if (modalId === 'studentModal') {
+        clearUserIdError('studentUserId');
     }
 }
