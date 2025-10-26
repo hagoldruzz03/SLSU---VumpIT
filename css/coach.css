@@ -9,6 +9,8 @@
     --text-light: #ffffff;
     --text-gray: #64748b;
     --border-color: #e2e8f0;
+    --error-red: #ef4444;
+    --error-red-light: #fee2e2;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -366,11 +368,13 @@ body::before {
     letter-spacing: 1px;
 }
 
-/* Stats Inline */
+/* FIXED: Stats Inline - Always 2x2 Grid */
 .stats-inline {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     gap: 20px;
+    max-width: 100%;
 }
 
 /* Sport Badge Glassmorphism */
@@ -1044,6 +1048,7 @@ tbody tr:last-child td {
     animation: iconPulse 2s infinite;
 }
 
+
 @keyframes iconPulse {
     0%, 100% {
         box-shadow: 0 0 0 0 currentColor;
@@ -1211,6 +1216,7 @@ tbody tr:last-child td {
 
 .form-group {
     margin-bottom: 20px;
+    position: relative;
 }
 
 .form-group label {
@@ -1245,6 +1251,47 @@ tbody tr:last-child td {
 .form-group textarea {
     resize: vertical;
     min-height: 80px;
+}
+
+/* User ID Error Validation Styling */
+.user-id-error {
+    color: var(--error-red);
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: slideInError 0.3s ease;
+}
+
+@keyframes slideInError {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-id-error svg {
+    flex-shrink: 0;
+}
+
+/* Input field with error state */
+.form-group input.error-input,
+.form-group input[style*="border-color: rgb(239, 68, 68)"] {
+    border-color: var(--error-red) !important;
+    border-width: 2px !important;
+    background-color: var(--error-red-light);
+}
+
+.form-group input.error-input:focus,
+.form-group input[style*="border-color: rgb(239, 68, 68)"]:focus {
+    border-color: var(--error-red) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 
 /* Logout Modal */
@@ -1679,6 +1726,7 @@ tbody tr:last-child td {
     align-items: center;
     gap: 12px;
     color: #495057;
+    flex-wrap: wrap;
 }
 
 .readonly-badge {
@@ -1687,7 +1735,7 @@ tbody tr:last-child td {
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1715,7 +1763,8 @@ tbody tr:last-child td {
 
 /* Prevent any interaction with readonly sections */
 .readonly-section input[readonly],
-.readonly-section select[disabled] {
+.readonly-section select[disabled],
+.readonly-section textarea[readonly] {
     pointer-events: none;
 }
 
@@ -1729,7 +1778,25 @@ tbody tr:last-child td {
     opacity: 0.3;
 }
 
-/* Responsive */
+/* Canvas styling for charts */
+canvas {
+    max-width: 100%;
+    height: auto !important;
+}
+
+/* Responsive - UPDATED FOR FIXED 2x2 GRID */
+@media (max-width: 1200px) {
+    /* Keep stats grid 2x2 */
+    .stats-inline {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .classes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
 @media (max-width: 1024px) {
     .profile-grid-layout {
         grid-template-columns: 1fr;
@@ -1738,9 +1805,59 @@ tbody tr:last-child td {
     .form-row {
         grid-template-columns: 1fr;
     }
+    
+    /* Keep stats grid 2x2 */
+    .stats-inline {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
 }
 
 @media (max-width: 768px) {
+    .header {
+        padding: 12px 20px;
+    }
+    
+    .welcome-title {
+        font-size: 32px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 14px;
+    }
+    
+    .page-title-hero {
+        font-size: 28px;
+    }
+    
+    .page-subtitle-hero {
+        font-size: 12px;
+    }
+    
+    .page-header-hero {
+        padding: 16px 20px;
+        height: auto;
+        min-height: 140px;
+    }
+    
+    .page-content-scrollable {
+        padding: 16px 20px;
+    }
+    
+    .search-box-hero input {
+        padding: 14px 20px 14px 50px;
+        font-size: 14px;
+    }
+    
+    .btn-add-hero {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .classes-grid {
+        grid-template-columns: 1fr;
+    }
+    
     .profile-page-header {
         padding: 24px;
         margin: 16px;
@@ -1780,6 +1897,10 @@ tbody tr:last-child td {
         grid-template-columns: 1fr;
     }
     
+    .profile-page-content {
+        padding: 20px;
+    }
+    
     .modal-large-form {
         width: 95%;
         max-width: 95%;
@@ -1787,5 +1908,175 @@ tbody tr:last-child td {
     
     .form-section-title {
         font-size: 16px;
+    }
+    
+    .modal-body-white {
+        padding: 24px;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+    
+    .table-actions {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .table-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Keep stats grid 2x2 but adjust sizing */
+    .stats-inline {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .sport-badge-glass {
+        padding: 16px;
+        gap: 12px;
+        min-height: 100px;
+    }
+    
+    .sport-icon-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .stat-icon-img {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .sport-label {
+        font-size: 10px;
+    }
+    
+    .sport-value {
+        font-size: 24px;
+    }
+    
+    .sport-subtitle {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-title {
+        font-size: 18px;
+    }
+    
+    .back-btn,
+    .logout-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    
+    .back-btn span,
+    .logout-btn span {
+        display: none;
+    }
+    
+    .welcome-title {
+        font-size: 24px;
+    }
+    
+    .page-title-hero {
+        font-size: 22px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+    }
+    
+    .notification-modal .modal-content {
+        width: 90%;
+    }
+    
+    .logout-modal-title {
+        font-size: 20px;
+    }
+    
+    .logout-icon-large {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .logout-icon-large svg {
+        width: 60px;
+        height: 60px;
+    }
+    
+    /* Keep stats grid 2x2 with smaller sizing */
+    .stats-inline {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .sport-badge-glass {
+        padding: 12px;
+        gap: 10px;
+        min-height: 90px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .sport-icon-image {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .stat-icon-img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .sport-label {
+        font-size: 9px;
+    }
+    
+    .sport-value {
+        font-size: 20px;
+    }
+    
+    .sport-subtitle {
+        font-size: 9px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .header,
+    .back-btn,
+    .logout-btn,
+    .btn-profile-edit,
+    .table-actions,
+    .modal,
+    .page-header-hero {
+        display: none !important;
+    }
+    
+    .page {
+        position: static;
+    }
+    
+    .profile-page-content,
+    .page-content-scrollable {
+        overflow: visible;
+        max-height: none;
+    }
+    
+    .profile-card,
+    .class-card,
+    .table-container {
+        break-inside: avoid;
     }
 }
