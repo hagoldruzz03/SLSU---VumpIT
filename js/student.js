@@ -836,7 +836,14 @@ function createBMIChartModal() {
                 backgroundColor: 'rgba(30, 201, 124, 0.1)',
                 borderWidth: 3,
                 tension: 0.4,
-                fill: true
+                fill: true,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                pointBackgroundColor: '#1ec97c',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointHitRadius: 10,
+                showLine: true
             }]
         },
         options: {
@@ -898,7 +905,14 @@ function createJumpChartModal() {
                     backgroundColor: 'rgba(30, 201, 124, 0.1)',
                     borderWidth: 3,
                     tension: 0.4,
-                    fill: true
+                    fill: true,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: '#1ec97c',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointHitRadius: 10,
+                    showLine: true
                 }
             ]
         },
