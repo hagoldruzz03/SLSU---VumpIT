@@ -1,0 +1,930 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    overflow: hidden;
+    min-height: 100vh;
+    position: relative;
+    color: white;
+}
+
+/* Video Background */
+.background-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -2;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    position: relative;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-image {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.logo span {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 600;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.header-icons {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.icon-btn:active {
+    transform: scale(0.95);
+}
+
+/* Video Tutorial Icon Button */
+.video-tutorial-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+.video-tutorial-icon-btn img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+/* About Us Icon Button */
+.about-us-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+.about-us-icon-btn img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+/* Admin Access Button (Bottom Left) */
+.admin-access-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 35px;
+    height: 35px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 90;
+    padding: 0;
+}
+
+.admin-access-btn:hover {
+    transform: scale(1.15);
+}
+
+.admin-access-btn:active {
+    transform: scale(0.9);
+}
+
+.admin-access-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.admin-access-btn:hover img {
+    opacity: 1;
+}
+
+/* Floating Verification Modal */
+.verification-modal {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-120px);
+    z-index: 2000;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+}
+
+.verification-modal.active {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.verification-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.4);
+    min-width: 280px;
+}
+
+.verification-modal.checking .verification-content {
+    background: rgba(82, 101, 132, 0.24);
+    box-shadow: 0 12px 40px rgba(59, 131, 246, 0.222),
+                0 0 0 1px rgba(59, 131, 246, 0.325);
+}
+
+.verification-modal.success .verification-content {
+    background: rgba(34, 197, 94, 0.501);
+    box-shadow: 0 12px 40px rgba(34, 197, 94, 0.275),
+                0 0 0 1px rgba(34, 197, 94, 0.274);
+}
+
+.verification-modal.error .verification-content {
+    background: rgba(239, 68, 68, 0.23);
+    box-shadow: 0 12px 40px rgba(255, 49, 49, 0.459),
+                0 0 0 1px rgba(239, 68, 68, 0.277);
+}
+
+.verification-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.verification-spinner {
+    width: 28px;
+    height: 28px;
+    color: white;
+    animation: rotate 1s linear infinite;
+}
+
+.verification-check {
+    width: 28px;
+    height: 28px;
+    color: white;
+    animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.verification-error {
+    width: 28px;
+    height: 28px;
+    color: white;
+    animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+.verification-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.3px;
+}
+
+/* Main Content */
+.container {
+    padding: 20px clamp(20px, 5vw, 60px);
+    min-height: calc(100vh - 90px);
+    display: flex;
+    align-items: center;
+}
+
+.content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: clamp(30px, 6vw, 60px);
+}
+
+.left-content {
+    flex: 1;
+    max-width: 600px;
+}
+
+.left-content h1 {
+    font-size: clamp(36px, 8vw, 64px);
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.divider {
+    width: clamp(60px, 10vw, 80px);
+    height: 4px;
+    background: #FF8C42;
+    margin-bottom: 25px;
+}
+
+.description {
+    font-size: clamp(14px, 1.5vw, 16px);
+    line-height: 1.7;
+    color: rgb(255, 255, 255);
+    text-align: justify;
+}
+
+/* Arrow Container */
+.arrow-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -100px;
+    margin-bottom: -7px;
+    animation: hoverUpDown 2s ease-in-out infinite;
+    z-index: 10;
+    position: relative;
+}
+
+.arrow-icon {
+    width: clamp(80px, 10vw, 120px);
+    height: clamp(80px, 10vw, 120px);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+
+}
+
+@keyframes hoverUpDown {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* RFID Card */
+.right-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.rfid-card {
+    background: rgba(255, 255, 255, 0.218);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: clamp(20px, 4vw, 35px) clamp(30px, 5vw, 50px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(20px, 3vw, 30px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    width: clamp(320px, 38vw, 480px);
+    border: none;
+    transition: all 0.3s ease;
+    margin-top: 0;
+    position: relative;
+    z-index: 5;
+}
+
+.rfid-text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.rfid-text {
+    font-size: clamp(28px, 4.5vw, 42px);
+    font-weight: 700;
+    color: white;
+    letter-spacing: 4px;
+    text-align: center;
+}
+
+.rfid-subtext {
+    font-size: clamp(14px, 2vw, 18px);
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    font-weight: 400;
+}
+
+.rfid-icon {
+    width: clamp(120px, 16vw, 180px);
+    height: clamp(120px, 16vw, 180px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 30px;
+    margin-bottom: -20px;
+}
+
+.rfid-icon img {
+    margin-top: -50px;
+    width: 170%;
+    height: 170%;
+    object-fit: contain;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+/* RFID Input Container */
+.rfid-input-container {
+    width: 100%;
+    margin-bottom: -10px;
+}
+
+.rfid-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+    letter-spacing: 1px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.rfid-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.5px;
+}
+
+.rfid-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15),
+                inset 0 2px 6px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
+}
+
+.rfid-input:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+.modal.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInFull {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 480px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(100px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 3000;
+}
+
+.loading-spinner.active {
+    display: flex;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(255, 140, 66, 0.2);
+    border-top: 5px solid #FF8C42;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    animation: pulse-text 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Video Tutorial Modal */
+.video-tutorial-modal {
+    max-width: 100%;
+    width: 100%;
+    max-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(30, 30, 30, 0.95) 100%);
+    color: white;
+    padding: 0;
+    border-radius: 0;
+    animation: fadeInFull 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.tutorial-modal-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.tutorial-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
+
+.tutorial-close-btn {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    background: rgba(128, 128, 128, 0.6);
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 12px 35px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 20;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.tutorial-close-btn:hover {
+    background: rgba(128, 128, 128, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.tutorial-close-btn:active {
+    transform: translateY(0);
+}
+
+.tutorial-header {
+    text-align: center;
+    padding: 30px 40px 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+}
+
+.tutorial-header h1 {
+    font-size: 38px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: 3px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.tutorial-subtitle {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    margin-top: 5px;
+}
+
+.tutorial-video-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 80px 50px;
+    flex: 1;
+    position: relative;
+    z-index: 10;
+    max-height: calc(100vh - 180px);
+}
+
+.tutorial-video {
+    width: 100%;
+    max-width: 900px;
+    max-height: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+    background: #000;
+}
+
+/* About Us Modal */
+.about-modal {
+    max-width: 100%;
+    width: 100%;
+    max-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(30, 30, 30, 0.95) 100%);
+    color: white;
+    padding: 0;
+    border-radius: 0;
+    animation: fadeInFull 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.about-modal-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.about-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+}
+
+.about-close-btn {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    background: rgba(128, 128, 128, 0.6);
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 12px 35px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 20;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.about-close-btn:hover {
+    background: rgba(128, 128, 128, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.about-close-btn:active {
+    transform: translateY(0);
+}
+
+.about-header {
+    text-align: center;
+    padding: 40px 40px 40px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+}
+
+.about-header h1 {
+    font-size: 45px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 20px;
+    letter-spacing: 3px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.about-subtitle {
+    margin-top: 15px;
+}
+
+.about-subtitle p {
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 8px 0;
+    font-weight: 500;
+}
+
+.developers-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    padding: 20px 60px;
+    flex: 1;
+    flex-wrap: nowrap;
+    position: relative;
+    z-index: 10;
+}
+
+.developer-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 280px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    margin-top: -10px;
+}
+
+.developer-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 40px rgba(255, 140, 66, 0.4);
+}
+
+.developer-image-wrapper {
+    width: 180px;
+    height: 180px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    background: white;
+    flex-shrink: 0;
+}
+
+.developer-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.developer-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.developer-role {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    text-align: center;
+    margin: 0;
+}
+
+.about-footer {
+    text-align: center;
+    padding: 40px 40px 60px;
+    min-height: 15vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-btn {
+    background: rgba(128, 128, 128, 0.6);
+    color: white;
+    border: none;
+    padding: 15px 50px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.back-btn:hover {
+    background: rgba(128, 128, 128, 0.8);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.back-btn:active {
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content-wrapper {
+        flex-direction: column;
+        gap: 40px;
+    }
+    
+    .left-content {
+        max-width: 100%;
+        text-align: center;
+    }
+    
+    .description {
+        text-align: center;
+    }
+    
+    .arrow-container {
+        margin-top: -100px;
+        margin-bottom: 40px;
+    }
+    
+    .rfid-card {
+        width: 100%;
+        max-width: 380px;
+    }
+    
+    .developers-container {
+        flex-direction: column;
+        gap: 30px;
+        padding: 20px;
+    }
+    
+    .verification-modal {
+        top: 20px;
+    }
+    
+    .verification-content {
+        min-width: auto;
+        padding: 14px 22px;
+    }
+    
+    .tutorial-video-container {
+        padding: 20px 20px 40px;
+    }
+    
+    .tutorial-header h1 {
+        font-size: 36px;
+    }
+    
+    .tutorial-subtitle {
+        font-size: 16px;
+    }
+    
+    .tutorial-close-btn,
+    .about-close-btn {
+        top: 20px;
+        right: 20px;
+        padding: 10px 25px;
+        font-size: 14px;
+    }
+}

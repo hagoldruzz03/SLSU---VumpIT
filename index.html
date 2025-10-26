@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vumpIT - Login Portal</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- Video Background -->
+    <video class="background-video" autoplay muted loop playsinline>
+      <source src="elements/backgroundaboutus.mp4" type="video/mp4" />
+    </video>
+
+    <!-- Overlay -->
+    <div class="overlay"></div>
+
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <img
+          src="elements/LOGO.png"
+          style="width: 150px; height: 80px; object-fit: contain"
+          alt="VUMPIT Logo"
+          class="logo-image"
+        />
+      </div>
+
+      <div class="header-icons">
+        <button
+          class="icon-btn video-tutorial-icon-btn"
+          id="videoTutorialIconBtn"
+          title="Video Tutorial"
+        >
+          <img
+            src="elements/devicetutorialicon.png"
+            alt="Video Tutorial"
+            width="32"
+            height="32"
+          />
+        </button>
+        <button
+          class="icon-btn about-us-icon-btn"
+          id="aboutUsIconBtn"
+          title="About Us"
+        >
+          <img
+            src="elements/aboutusicon.png"
+            alt="About Us"
+            width="32"
+            height="32"
+          />
+        </button>
+      </div>
+    </header>
+
+    <!-- Admin Access Button (Bottom Left) -->
+    <button class="admin-access-btn" id="adminAccessBtn" title="Admin Access">
+      <img src="elements/adminicon.png" alt="Admin" width="40" height="40" />
+    </button>
+
+    <!-- Floating Verification Modal -->
+    <div id="verificationModal" class="verification-modal">
+      <div class="verification-content">
+        <div class="verification-icon">
+          <svg
+            class="verification-spinner"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+        </div>
+        <span class="verification-text">Checking...</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container">
+      <div class="content-wrapper">
+        <div class="left-content">
+          <h1>Welcome!</h1>
+          <div class="divider"></div>
+          <p class="description">
+            The ultimate high-tech sports measurement system designed to track
+            and analyze your vertical jump performance. Built with precision and
+            innovation, VUMPIT combines Vertical Momentum, Performance,
+            Intensity, and Training to give athletes real-time insights into
+            their explosive power. It empowers users to make data-driven
+            decisions for training improvement and long-term performance
+            optimization.
+          </p>
+        </div>
+
+        <div class="right-content">
+          <div class="arrow-container">
+            <svg
+              class="arrow-icon"
+              viewBox="0 0 100 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <!-- First chevron/arrowhead -->
+              <path
+                d="M 15 55 L 50 15 L 85 55"
+                stroke="gray"
+                stroke-width="14"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+              <!-- Second chevron/arrowhead -->
+              <path
+                d="M 15 85 L 50 45 L 85 85"
+                stroke="gray"
+                stroke-width="14"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+          </div>
+          <div class="rfid-card" id="rfidCard">
+            <div class="rfid-text-container">
+              <div class="rfid-text">TAP RFID</div>
+              <div class="rfid-subtext">or enter User ID below</div>
+            </div>
+            <div class="rfid-icon">
+              <img src="elements/rfid-icon.png" alt="RFID Icon" />
+            </div>
+            <div class="rfid-input-container">
+              <input
+                type="text"
+                id="userId"
+                class="rfid-input"
+                placeholder="Enter User ID"
+                autocomplete="username"
+                autofocus
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Video Tutorial Modal -->
+    <div id="videoTutorialModal" class="modal">
+      <div class="modal-content video-tutorial-modal">
+        <!-- Video Background for Tutorial Modal -->
+        <video class="tutorial-modal-video" autoplay muted loop playsinline>
+          <source src="elements/backgroundaboutus.mp4" type="video/mp4" />
+        </video>
+        <div class="tutorial-modal-overlay"></div>
+
+        <button class="tutorial-close-btn" id="tutorialCloseBtn">BACK</button>
+
+        <div class="tutorial-header">
+          <h1>JUMP TUTORIAL</h1>
+          <p class="tutorial-subtitle">Learn how to jump properly</p>
+        </div>
+
+        <div class="tutorial-video-container">
+          <video id="tutorialVideo" class="tutorial-video" controls>
+            <source src="elements/jumptutorial.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Us Modal -->
+    <div id="aboutUsModal" class="modal">
+      <div class="modal-content about-modal">
+        <!-- Video Background for About Us Modal -->
+        <video class="about-modal-video" autoplay muted loop playsinline>
+          <source src="elements/backgroundaboutus.mp4" type="video/mp4" />
+        </video>
+        <div class="about-modal-overlay"></div>
+
+        <button class="about-close-btn" id="aboutCloseBtn">BACK</button>
+
+        <div class="about-header">
+          <h1>ABOUT US</h1>
+          <div class="about-subtitle">
+            <p>Bachelor of Science in Computer Engineering</p>
+            <p>Batch 2025</p>
+          </div>
+        </div>
+
+        <div class="developers-container">
+          <div class="developer-card">
+            <div class="developer-image-wrapper">
+              <img
+                src="elements/ayla.jpg"
+                alt="Ayla Jean Z. Abrea"
+                class="developer-image"
+              />
+            </div>
+            <h3 class="developer-name">Ayla Jean Z. Abrea</h3>
+            <p class="developer-role">Developer</p>
+          </div>
+
+          <div class="developer-card">
+            <div class="developer-image-wrapper">
+              <img
+                src="elements/harold.png"
+                alt="Harold R. Cruz"
+                class="developer-image"
+              />
+            </div>
+            <h3 class="developer-name">Harold R. Cruz</h3>
+            <p class="developer-role">Developer</p>
+          </div>
+
+          <div class="developer-card">
+            <div class="developer-image-wrapper">
+              <img
+                src="elements/trina.jpg"
+                alt="Ma. Trina Arabella A. Salumbides"
+                class="developer-image"
+              />
+            </div>
+            <h3 class="developer-name">Ma. Trina Arabella A. Salumbides</h3>
+            <p class="developer-role">Developer</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Redirecting to your portal...</p>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>
