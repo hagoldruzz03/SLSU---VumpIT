@@ -762,7 +762,7 @@
           <form id="classForm">
             <input type="hidden" id="editClassId" />
             <div class="form-group">
-              <label for="className">Class Name</label>
+              <label for="className">Class Name *</label>
               <input
                 type="text"
                 id="className"
@@ -771,23 +771,40 @@
               />
             </div>
             <div class="form-group">
-              <label for="classCollege">College</label>
+              <label for="classCollege">College *</label>
               <select id="classCollege" required>
                 <option value="">Select College</option>
+                <option value="College of Agriculture">
+                  College of Agriculture
+                </option>
+                <option value="College of Allied Medicine">
+                  College of Allied Medicine
+                </option>
+                <option value="College of Arts & Sciences">
+                  College of Arts & Sciences
+                </option>
+                <option
+                  value="College of Administration, Business, Hospitality Management & Accountancy"
+                >
+                  College of Administration, Business, Hospitality Management &
+                  Accountancy
+                </option>
                 <option value="College of Engineering">
                   College of Engineering
-                </option>
-                <option value="College of Arts and Sciences">
-                  College of Arts and Sciences
                 </option>
                 <option value="College of Teacher Education">
                   College of Teacher Education
                 </option>
-                <option value="College of Business">College of Business</option>
+                <option value="College of Industrial Technology">
+                  College of Industrial Technology
+                </option>
+                <option value="Institute of Human Kinetics">
+                  Institute of Human Kinetics
+                </option>
               </select>
             </div>
             <div class="form-group">
-              <label for="classCourse">Course</label>
+              <label for="classCourse">Course *</label>
               <input
                 type="text"
                 id="classCourse"
@@ -796,7 +813,7 @@
               />
             </div>
             <div class="form-group">
-              <label for="classYear">Year Level</label>
+              <label for="classYear">Year Level *</label>
               <select id="classYear" required>
                 <option value="">Select Year</option>
                 <option value="I">I</option>
@@ -806,7 +823,7 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="classSection">Section</label>
+              <label for="classSection">Section *</label>
               <input
                 type="text"
                 id="classSection"
@@ -875,6 +892,7 @@
                     required
                     placeholder="Enter User ID"
                   />
+                  <!-- Error message will be dynamically inserted here by JavaScript -->
                 </div>
                 <div class="form-group">
                   <label for="studentName">Full Name *</label>
@@ -924,17 +942,32 @@
                   <label for="studentCollege">College</label>
                   <select id="studentCollege">
                     <option value="">Select College</option>
+                    <option value="College of Agriculture">
+                      College of Agriculture
+                    </option>
+                    <option value="College of Allied Medicine">
+                      College of Allied Medicine
+                    </option>
+                    <option value="College of Arts & Sciences">
+                      College of Arts & Sciences
+                    </option>
+                    <option
+                      value="College of Administration, Business, Hospitality Management & Accountancy"
+                    >
+                      College of Administration, Business, Hospitality
+                      Management & Accountancy
+                    </option>
                     <option value="College of Engineering">
                       College of Engineering
-                    </option>
-                    <option value="College of Arts and Sciences">
-                      College of Arts and Sciences
                     </option>
                     <option value="College of Teacher Education">
                       College of Teacher Education
                     </option>
-                    <option value="College of Business">
-                      College of Business
+                    <option value="College of Industrial Technology">
+                      College of Industrial Technology
+                    </option>
+                    <option value="Institute of Human Kinetics">
+                      Institute of Human Kinetics
                     </option>
                   </select>
                 </div>
@@ -1166,7 +1199,7 @@
               <button
                 type="button"
                 class="btn btn-reset"
-                onclick="document.getElementById('studentForm').reset()"
+                onclick="document.getElementById('studentForm').reset(); clearUserIdError('studentUserId');"
               >
                 Reset
               </button>
