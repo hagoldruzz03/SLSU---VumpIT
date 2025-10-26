@@ -1,5 +1,5 @@
-// Admin Interface JavaScript - Full Screen Modal Design with Login
-// Handles all admin functionalities with full-screen modals and authentication
+// Admin Interface JavaScript - Automatic Login via Unified System
+// Admin authentication now handled by index.html
 
 // Global variables
 let currentAdmin = null;
@@ -10,7 +10,6 @@ let userToDelete = null;
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     checkLoginStatus();
-    setupEventListeners();
     setupPasswordToggles();
     setupUserTypeListener();
 });
@@ -27,9 +26,7 @@ function setupUserTypeListener() {
 function handleUserTypeChange() {
     const userType = document.getElementById('userType').value;
     const sportField = document.getElementById('sport');
-    const passwordField = document.getElementById('userPassword');
     const sportFieldContainer = document.getElementById('sportField');
-    const passwordFieldContainer = document.getElementById('passwordField');
     
     if (userType === 'admin') {
         // Disable sport field for admin
@@ -38,12 +35,6 @@ function handleUserTypeChange() {
         sportField.value = 'All Sports';
         sportFieldContainer.style.opacity = '0.5';
         sportFieldContainer.style.pointerEvents = 'none';
-        
-        // Enable password field for admin
-        passwordField.disabled = false;
-        passwordField.required = true;
-        passwordFieldContainer.style.opacity = '1';
-        passwordFieldContainer.style.pointerEvents = 'auto';
     } else if (userType === 'coach') {
         // Enable sport field for coach
         sportField.disabled = false;
@@ -53,15 +44,8 @@ function handleUserTypeChange() {
         }
         sportFieldContainer.style.opacity = '1';
         sportFieldContainer.style.pointerEvents = 'auto';
-        
-        // Disable password field for coach
-        passwordField.disabled = true;
-        passwordField.required = false;
-        passwordField.value = '';
-        passwordFieldContainer.style.opacity = '0.5';
-        passwordFieldContainer.style.pointerEvents = 'none';
     } else {
-        // Enable both fields for athlete/student
+        // Enable sport field for athlete/student
         sportField.disabled = false;
         sportField.required = true;
         if (sportField.value === 'All Sports') {
@@ -69,161 +53,59 @@ function handleUserTypeChange() {
         }
         sportFieldContainer.style.opacity = '1';
         sportFieldContainer.style.pointerEvents = 'auto';
-        
-        passwordField.disabled = false;
-        passwordField.required = true;
-        passwordFieldContainer.style.opacity = '1';
-        passwordFieldContainer.style.pointerEvents = 'auto';
     }
 }
 
-// Setup password toggles
+// Setup password toggles (REMOVED - No longer needed)
 function setupPasswordToggles() {
-    // Login password toggle
-    const toggleLoginPassword = document.getElementById('toggleLoginPassword');
-    if (toggleLoginPassword) {
-        toggleLoginPassword.addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = this.querySelector('.eye-icon');
-            const eyeOffIcon = this.querySelector('.eye-off-icon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.style.display = 'none';
-                eyeOffIcon.style.display = 'block';
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.style.display = 'block';
-                eyeOffIcon.style.display = 'none';
-            }
-        });
-    }
-    
-    // User form password toggle
-    const toggleUserPassword = document.getElementById('toggleUserPassword');
-    if (toggleUserPassword) {
-        toggleUserPassword.addEventListener('click', function() {
-            const passwordInput = document.getElementById('userPassword');
-            const eyeIcon = this.querySelector('.eye-icon');
-            const eyeOffIcon = this.querySelector('.eye-off-icon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.style.display = 'none';
-                eyeOffIcon.style.display = 'block';
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.style.display = 'block';
-                eyeOffIcon.style.display = 'none';
-            }
-        });
-    }
+    // Password toggle functionality removed
 }
 
-// Check login status
+// Check login status - Verify admin session from unified login
 function checkLoginStatus() {
     const loggedInAdmin = sessionStorage.getItem('loggedInAdmin');
-    if (loggedInAdmin) {
-        currentAdmin = JSON.parse(loggedInAdmin);
-        showDashboard();
-    } else {
-        showLoginModal();
+    
+    if (!loggedInAdmin) {
+        // No admin session found, redirect to login page
+        window.location.href = 'index.html';
+        return;
     }
-}
-
-// Show login modal
-function showLoginModal() {
-    document.getElementById('loginModal').classList.add('active');
-    document.getElementById('dashboard').style.display = 'none';
+    
+    try {
+        currentAdmin = JSON.parse(loggedInAdmin);
+        
+        // Verify the user is actually an admin
+        if (currentAdmin.user_type !== 'admin') {
+            // Not an admin, clear session and redirect
+            sessionStorage.removeItem('loggedInAdmin');
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // Valid admin session, initialize dashboard
+        showDashboard();
+    } catch (error) {
+        console.error('Error parsing admin session:', error);
+        sessionStorage.removeItem('loggedInAdmin');
+        window.location.href = 'index.html';
+    }
 }
 
 // Show dashboard
 function showDashboard() {
-    document.getElementById('loginModal').classList.remove('active');
-    document.getElementById('dashboard').style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Prevent body scroll
+    const dashboard = document.getElementById('dashboard');
+    if (dashboard) {
+        dashboard.style.display = 'block';
+    }
+    document.body.style.overflow = 'hidden';
     initializeAdmin();
-}
-
-// Setup event listeners
-function setupEventListeners() {
-    // Login form
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
-    
-    // Logout buttons for new logout confirm modal
-    const closeLogoutConfirmBtn = document.getElementById('closeLogoutConfirmBtn');
-    if (closeLogoutConfirmBtn) {
-        closeLogoutConfirmBtn.addEventListener('click', hideLogoutConfirmModal);
-    }
-    
-    const cancelLogoutConfirmBtn = document.getElementById('cancelLogoutConfirmBtn');
-    if (cancelLogoutConfirmBtn) {
-        cancelLogoutConfirmBtn.addEventListener('click', hideLogoutConfirmModal);
-    }
-    
-    const confirmLogoutConfirmBtn = document.getElementById('confirmLogoutConfirmBtn');
-    if (confirmLogoutConfirmBtn) {
-        confirmLogoutConfirmBtn.addEventListener('click', handleLogout);
-    }
-}
-
-// Handle login
-function handleLogin(e) {
-    e.preventDefault();
-    
-    const adminId = document.getElementById('adminId').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const errorMsg = document.getElementById('loginError');
-    
-    if (typeof DataStore === 'undefined') {
-        if (errorMsg) {
-            errorMsg.textContent = 'Data store not loaded. Please refresh the page.';
-            errorMsg.classList.add('active');
-        }
-        return;
-    }
-    
-    const user = DataStore.getUserById(adminId);
-    
-    if (!user) {
-        if (errorMsg) {
-            errorMsg.textContent = 'Admin ID not found!';
-            errorMsg.classList.add('active');
-        }
-        return;
-    }
-    
-    if (user.user_type !== 'admin') {
-        if (errorMsg) {
-            errorMsg.textContent = 'This account is not an admin account!';
-            errorMsg.classList.add('active');
-        }
-        return;
-    }
-    
-    if (user.password !== password) {
-        if (errorMsg) {
-            errorMsg.textContent = 'Incorrect password!';
-            errorMsg.classList.add('active');
-        }
-        return;
-    }
-    
-    currentAdmin = user;
-    sessionStorage.setItem('loggedInAdmin', JSON.stringify(user));
-    if (errorMsg) {
-        errorMsg.classList.remove('active');
-    }
-    showDashboard();
 }
 
 // Handle logout
 function handleLogout() {
     currentAdmin = null;
     sessionStorage.removeItem('loggedInAdmin');
+    sessionStorage.clear();
     hideLogoutConfirmModal();
     window.location.href = 'index.html';
 }
@@ -293,7 +175,7 @@ function attachEventListeners() {
         cancelBtn.addEventListener('click', function(e) {
             e.preventDefault();
             document.getElementById('userForm').reset();
-            handleUserTypeChange(); // Reset field states
+            handleUserTypeChange();
         });
     }
     
@@ -319,22 +201,6 @@ function attachEventListeners() {
         confirmDeleteBtn.addEventListener('click', confirmDelete);
     }
     
-    // Logout Modal buttons (old style for compatibility)
-    const closeLogoutModal = document.getElementById('closeLogoutModal');
-    if (closeLogoutModal) {
-        closeLogoutModal.addEventListener('click', closeLogoutModalFunc);
-    }
-    
-    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
-    if (cancelLogoutBtn) {
-        cancelLogoutBtn.addEventListener('click', closeLogoutModalFunc);
-    }
-    
-    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
-    if (confirmLogoutBtn) {
-        confirmLogoutBtn.addEventListener('click', confirmLogout);
-    }
-    
     // Form submission
     const userForm = document.getElementById('userForm');
     if (userForm) {
@@ -347,21 +213,28 @@ function attachEventListeners() {
         logoutBtn.addEventListener('click', showLogoutConfirmModal);
     }
     
-    // Close modals on outside click (only for small modals)
+    // Logout confirmation modal buttons
+    const closeLogoutConfirmBtn = document.getElementById('closeLogoutConfirmBtn');
+    if (closeLogoutConfirmBtn) {
+        closeLogoutConfirmBtn.addEventListener('click', hideLogoutConfirmModal);
+    }
+    
+    const cancelLogoutConfirmBtn = document.getElementById('cancelLogoutConfirmBtn');
+    if (cancelLogoutConfirmBtn) {
+        cancelLogoutConfirmBtn.addEventListener('click', hideLogoutConfirmModal);
+    }
+    
+    const confirmLogoutConfirmBtn = document.getElementById('confirmLogoutConfirmBtn');
+    if (confirmLogoutConfirmBtn) {
+        confirmLogoutConfirmBtn.addEventListener('click', handleLogout);
+    }
+    
+    // Close modals on outside click
     const deleteModal = document.getElementById('deleteModal');
     if (deleteModal) {
         deleteModal.addEventListener('click', function(e) {
             if (e.target === this) {
                 closeDeleteModalFunc();
-            }
-        });
-    }
-
-    const logoutModal = document.getElementById('logoutModal');
-    if (logoutModal) {
-        logoutModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeLogoutModalFunc();
             }
         });
     }
@@ -448,19 +321,12 @@ function openAddUserModal() {
     
     // Reset field states
     const sportField = document.getElementById('sport');
-    const passwordField = document.getElementById('userPassword');
     const sportFieldContainer = document.getElementById('sportField');
-    const passwordFieldContainer = document.getElementById('passwordField');
     
     sportField.disabled = false;
     sportField.required = true;
     sportFieldContainer.style.opacity = '1';
     sportFieldContainer.style.pointerEvents = 'auto';
-    
-    passwordField.disabled = false;
-    passwordField.required = true;
-    passwordFieldContainer.style.opacity = '1';
-    passwordFieldContainer.style.pointerEvents = 'auto';
     
     document.getElementById('userModal').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -477,14 +343,13 @@ function editUser(userId) {
     currentEditUserId = userId;
     document.getElementById('modalTitle').textContent = 'EDIT USER';
     
-    // Fill form with user data
+    // Fill form with user data (no password field)
     document.getElementById('userId').value = user.user_id;
     document.getElementById('userId').disabled = true;
     document.getElementById('userName').value = user.user_name;
     document.getElementById('userType').value = user.user_type;
     document.getElementById('sport').value = user.sport || '';
     document.getElementById('gender').value = user.gender;
-    document.getElementById('userPassword').value = user.password || '';
     
     // Handle college field
     const college = user.coach_college || user.user_college;
@@ -528,14 +393,6 @@ function viewUser(userId) {
     const userType = capitalizeFirstLetter(user.user_type);
     const sport = user.sport || 'N/A';
     
-    // Mask password with asterisks for admin users only
-    let passwordDisplay = 'N/A';
-    if (user.user_type === 'admin' && user.password) {
-        passwordDisplay = '•'.repeat(user.password.length);
-    } else if (user.password) {
-        passwordDisplay = user.password;
-    }
-    
     document.getElementById('viewUserContent').innerHTML = `
         <div class="profile-section">
             <h2 class="profile-section-title">Personal Information</h2>
@@ -570,12 +427,6 @@ function viewUser(userId) {
                     <div class="profile-item-label">College</div>
                     <div class="profile-item-value">${college}</div>
                 </div>
-                ${user.user_type !== 'coach' ? `
-                <div class="profile-item">
-                    <div class="profile-item-label">Password</div>
-                    <div class="profile-item-value ${user.user_type === 'admin' ? 'password-masked' : ''}">${passwordDisplay}</div>
-                </div>
-                ` : ''}
             </div>
         </div>
 
@@ -619,10 +470,7 @@ function handleFormSubmit(e) {
         userData.sport = document.getElementById('sport').value.trim();
     }
     
-    // Handle password field based on user type
-    if (userType !== 'coach') {
-        userData.password = document.getElementById('userPassword').value;
-    }
+    // No password field - password will be handled by data.js defaults
     
     // Set college field based on user type
     const college = document.getElementById('college').value.trim();
@@ -707,38 +555,21 @@ function confirmDelete() {
     }
 }
 
-// Confirm logout (old style)
-function confirmLogout() {
-    // Clear session data
-    sessionStorage.clear();
-    localStorage.clear();
-    
-    // Redirect to home page
-    window.location.href = 'index.html';
-}
-
 // Close modals
 function closeUserModal() {
     document.getElementById('userModal').classList.remove('active');
     document.getElementById('userForm').reset();
     currentEditUserId = null;
-    document.body.style.overflow = 'hidden'; // Keep body overflow hidden
+    document.body.style.overflow = 'hidden';
     
     // Reset field states
     const sportField = document.getElementById('sport');
-    const passwordField = document.getElementById('userPassword');
     const sportFieldContainer = document.getElementById('sportField');
-    const passwordFieldContainer = document.getElementById('passwordField');
     
     sportField.disabled = false;
     sportField.required = true;
     sportFieldContainer.style.opacity = '1';
     sportFieldContainer.style.pointerEvents = 'auto';
-    
-    passwordField.disabled = false;
-    passwordField.required = true;
-    passwordFieldContainer.style.opacity = '1';
-    passwordFieldContainer.style.pointerEvents = 'auto';
     
     // Remove any temporarily added college options
     const collegeSelect = document.getElementById('college');
@@ -763,16 +594,12 @@ function closeUserModal() {
 
 function closeViewModalFunc() {
     document.getElementById('viewModal').classList.remove('active');
-    document.body.style.overflow = 'hidden'; // Keep body overflow hidden
+    document.body.style.overflow = 'hidden';
 }
 
 function closeDeleteModalFunc() {
     document.getElementById('deleteModal').classList.remove('active');
     userToDelete = null;
-}
-
-function closeLogoutModalFunc() {
-    document.getElementById('logoutModal').classList.remove('active');
 }
 
 // Show notification with icon
@@ -813,7 +640,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Prevent body scroll when full-screen modal is open
+// Handle keyboard shortcuts
 document.addEventListener('keydown', function(e) {
     // Close modals on Escape key
     if (e.key === 'Escape') {
@@ -826,19 +653,12 @@ document.addEventListener('keydown', function(e) {
         if (document.getElementById('deleteModal').classList.contains('active')) {
             closeDeleteModalFunc();
         }
-        if (document.getElementById('logoutModal').classList.contains('active')) {
-            closeLogoutModalFunc();
-        }
         if (document.getElementById('logoutConfirmModal').classList.contains('active')) {
             hideLogoutConfirmModal();
-        }
-        if (document.getElementById('loginModal').classList.contains('active')) {
-            // Don't close login modal on Escape
         }
     }
 });
 
 // Make functions globally accessible
 window.editUser = editUser;
-
 window.viewUser = viewUser;
