@@ -74,41 +74,7 @@ body {
     opacity: 0.6;
 }
 
-/* Table Password Cell */
-.password-cell {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.password-value {
-    font-family: 'Courier New', monospace;
-    letter-spacing: 2px;
-}
-
-.password-toggle-icon {
-    cursor: pointer;
-    padding: 4px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #64748b;
-    transition: all 0.3s ease;
-    border-radius: 4px;
-}
-
-.password-toggle-icon:hover {
-    color: var(--primary-green);
-    background: rgba(0, 217, 142, 0.1);
-}
-
-.password-toggle-icon svg {
-    width: 18px;
-    height: 18px;
-}
-
-/* Login Modal Styles (Copied from Coach) */
+/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -137,14 +103,17 @@ body {
     }
 }
 
-.login-modal {
+/* Logout Modal Styles */
+.logout-modal {
     background: white;
     border-radius: var(--radius-lg);
     width: 90%;
-    max-width: 420px;
+    max-width: 480px;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes slideUp {
@@ -156,142 +125,6 @@ body {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
-}
-
-.login-header {
-    text-align: center;
-    padding: 40px 28px 28px;
-}
-
-.login-logo-container {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 20px;
-    background: linear-gradient(135deg, var(--primary-green) 0%, #00b377 100%);
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-lg);
-}
-
-.login-logo {
-    width: 80px;
-    height: 80px;
-    border-radius: 30px;
-}
-
-.login-header h2 {
-    font-size: 24px;
-    color: var(--text-dark);
-    margin-bottom: 6px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-}
-
-.login-header p {
-    color: var(--text-gray);
-    font-size: 14px;
-}
-
-#loginForm {
-    padding: 0 28px 28px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 8px;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-sm);
-    font-size: 15px;
-    transition: var(--transition);
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: var(--primary-green);
-    box-shadow: 0 0 0 3px rgba(0, 217, 142, 0.1);
-}
-
-.btn {
-    width: 100%;
-    padding: 12px 24px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn-primary {
-    background: var(--primary-green);
-    color: white;
-}
-
-.btn-primary:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.error-message {
-    color: #ef4444;
-    font-size: 13px;
-    margin-top: 14px;
-    padding: 10px;
-    background: #fef2f2;
-    border-radius: var(--radius-sm);
-    border: 1px solid #fee2e2;
-    display: none;
-}
-
-.error-message.active {
-    display: block;
-}
-
-.login-footer {
-    text-align: center;
-    padding: 16px;
-    border-top: 1px solid var(--border-color);
-    background: var(--bg-light);
-}
-
-.login-footer a {
-    color: var(--primary-green);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 13px;
-    transition: var(--transition);
-}
-
-.login-footer a:hover {
-    color: var(--primary-dark);
-}
-
-/* Logout Modal Styles (Copied from Coach) */
-.logout-modal {
-    background: white;
-    border-radius: var(--radius-lg);
-    width: 90%;
-    max-width: 480px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    display: flex;
-    flex-direction: column;
 }
 
 .logout-modal-header {
@@ -441,7 +274,7 @@ body {
 }
 
 .btn-cancel-logout:hover {
-    background: #e5e7eb;
+    background: #858585;
     transform: translateY(-2px);
 }
 
@@ -716,13 +549,13 @@ body {
     white-space: nowrap;
 }
 
-.user-table th:nth-child(1) { width: 10%; } /* User ID */
-.user-table th:nth-child(2) { width: 18%; } /* Name */
-.user-table th:nth-child(3) { width: 10%; } /* Type */
-.user-table th:nth-child(4) { width: 12%; } /* Sport */
-.user-table th:nth-child(5) { width: 25%; } /* College */
-.user-table th:nth-child(6) { width: 10%; } /* Gender */
-.user-table th:nth-child(7) { width: 15%; } /* Actions */
+.user-table th:nth-child(1) { width: 10%; }
+.user-table th:nth-child(2) { width: 18%; }
+.user-table th:nth-child(3) { width: 10%; }
+.user-table th:nth-child(4) { width: 12%; }
+.user-table th:nth-child(5) { width: 25%; }
+.user-table th:nth-child(6) { width: 10%; }
+.user-table th:nth-child(7) { width: 15%; }
 
 .user-table tbody tr {
     border-bottom: 1px solid #f0f0f0;
