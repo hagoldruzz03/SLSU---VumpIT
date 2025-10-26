@@ -27,7 +27,8 @@ let measurementState = {
     bmi: null,
     bmiRating: null,
     jumpHeight: null,
-    jumpRating: null
+    jumpRating: null,
+    measurementDate: null
 };
 
 // Initialize on page load
@@ -343,14 +344,14 @@ function loadStudentProfile() {
     document.getElementById('statWeight').textContent = currentStudent.current_weight ? `${currentStudent.current_weight} kg` : '--';
     document.getElementById('statBMI').textContent = currentStudent.current_bmi ? currentStudent.current_bmi.toFixed(1) : '--';
     document.getElementById('statBMIRating').textContent = currentStudent.current_bmi_rating || '--';
-    document.getElementById('bmiUpdateDate').textContent = currentStudent.updated_bmi_date || 'N/A';
+    document.getElementById('bmiUpdateDate').textContent = currentStudent.updated_bmi_date ? formatDateLong(currentStudent.updated_bmi_date) : 'N/A';
 
     // Update Jump stats
     document.getElementById('statStandingReach').textContent = currentStudent.current_standing_reach ? `${currentStudent.current_standing_reach} cm` : '--';
     document.getElementById('statJumpReach').textContent = currentStudent.current_jump_reach ? `${currentStudent.current_jump_reach} cm` : '--';
     document.getElementById('statVerticalJump').textContent = currentStudent.current_vertical_jump ? `${currentStudent.current_vertical_jump} cm` : '--';
     document.getElementById('statJumpRating').textContent = currentStudent.current_jump_rating || '--';
-    document.getElementById('jumpUpdateDate').textContent = currentStudent.updated_jump_date || 'N/A';
+    document.getElementById('jumpUpdateDate').textContent = currentStudent.updated_jump_date ? formatDateLong(currentStudent.updated_jump_date) : 'N/A';
 }
 
 // ========== MEASUREMENT FLOW ==========
@@ -365,7 +366,8 @@ function resetMeasurementState() {
         bmi: null,
         bmiRating: null,
         jumpHeight: null,
-        jumpRating: null
+        jumpRating: null,
+        measurementDate: getCurrentDate()
     };
 }
 
@@ -503,6 +505,12 @@ function displayBMIResult() {
     document.getElementById('bmiResultValue').textContent = measurementState.bmi.toFixed(1);
     document.getElementById('bmiResultRating').textContent = measurementState.bmiRating;
     
+    // Update the date dynamically
+    const bmiResultDate = document.getElementById('bmiResultDate');
+    if (bmiResultDate) {
+        bmiResultDate.textContent = formatDateLong(measurementState.measurementDate);
+    }
+    
     document.getElementById('bmiResultModal').style.display = 'flex';
 }
 
@@ -604,8 +612,8 @@ function startJumpCountdown() {
     const countdownInterval = setInterval(() => {
         countdownValue--;
         if (countdownValue === 0) {
-            countdownDisplay.textContent = 'JUMP!';
-            countdownDisplay.style.color = '#ff6b35';
+            countdownDisplay.textContent = '';
+            countdownDisplay.style.color = 'rgba(255, 107, 53, 0)';
         } else {
             countdownDisplay.textContent = countdownValue;
         }
@@ -652,6 +660,12 @@ function displayJumpResult() {
     document.getElementById('jumpResultHeight').textContent = measurementState.jumpHeight.toFixed(0);
     document.getElementById('jumpResultRating').textContent = measurementState.jumpRating;
     
+    // Update the date dynamically
+    const jumpResultDate = document.getElementById('jumpResultDate');
+    if (jumpResultDate) {
+        jumpResultDate.textContent = formatDateLong(measurementState.measurementDate);
+    }
+    
     document.getElementById('jumpResultModal').style.display = 'flex';
 }
 
@@ -673,7 +687,7 @@ function finishJumpMeasurement() {
 
 function saveBMIData() {
     const newEntry = {
-        date: getCurrentDate(),
+        date: measurementState.measurementDate,
         height: measurementState.height,
         weight: measurementState.weight,
         bmi: measurementState.bmi,
@@ -689,14 +703,14 @@ function saveBMIData() {
     currentStudent.current_weight = measurementState.weight;
     currentStudent.current_bmi = measurementState.bmi;
     currentStudent.current_bmi_rating = measurementState.bmiRating;
-    currentStudent.updated_bmi_date = getCurrentDate();
+    currentStudent.updated_bmi_date = measurementState.measurementDate;
 
     DataStore.updateStudent(currentStudent.user_id, currentStudent);
 }
 
 function saveJumpData() {
     const newEntry = {
-        date: getCurrentDate(),
+        date: measurementState.measurementDate,
         standing_reach: measurementState.standingReach,
         jump_reach: measurementState.jumpReach,
         jump_height: measurementState.jumpHeight,
@@ -714,7 +728,7 @@ function saveJumpData() {
     currentStudent.current_jump_height = measurementState.jumpHeight;
     currentStudent.current_vertical_jump = measurementState.jumpHeight;
     currentStudent.current_jump_rating = measurementState.jumpRating;
-    currentStudent.updated_jump_date = getCurrentDate();
+    currentStudent.updated_jump_date = measurementState.measurementDate;
 
     DataStore.updateStudent(currentStudent.user_id, currentStudent);
 }
@@ -1071,6 +1085,13 @@ function formatDate(dateString) {
     const day = String(date.getDate()).padStart(2, '0');
     const year = date.getFullYear();
     return `${month}/${day}/${year}`;
+}
+
+function formatDateLong(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
 }
 
 function closeAllModals() {
