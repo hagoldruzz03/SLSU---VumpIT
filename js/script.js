@@ -151,53 +151,130 @@ function setupVideoBackground() {
 
 // Setup Event Listeners
 function setupEventListeners() {
-    // Auto-login on User ID input
     const userId = document.getElementById('userId');
     
-    if (userId) {
-        // Debounce timer
-        let typingTimer;
-        const typingDelay = 800; // Wait 800ms after user stops typing
+    if (!userId) return;
+    
+    // Debounce timer
+    let typingTimer;
+    const typingDelay = 800; // Wait 800ms after user stops typing
+    
+    // Track the last processed value to prevent duplicate processing
+    let lastProcessedValue = '';
+    
+    // Function to process login attempt
+    const processLogin = () => {
+        const value = userId.value.trim();
         
-        userId.addEventListener('input', () => {
-            clearTimeout(typingTimer);
+        // Prevent processing the same value twice
+        if (value === lastProcessedValue) {
+            return;
+        }
+        
+        if (value.length > 0) {
+            lastProcessedValue = value;
+            handleAutoLogin(value);
+        } else {
             hideVerificationModal();
-            
-            const value = userId.value.trim();
-            
-            // Show checking status if input has value
-            if (value.length > 0) {
-                showVerificationModal('checking', 'Checking...');
-                
-                // Start timer for auto-login check
-                typingTimer = setTimeout(() => {
-                    handleAutoLogin(value);
-                }, typingDelay);
-            } else {
-                hideVerificationModal();
-            }
-        });
+        }
+    };
+    
+    // Function to start checking with delay
+    const startCheckingWithDelay = () => {
+        clearTimeout(typingTimer);
+        hideVerificationModal();
         
-        // Also check on blur (when user clicks away)
-        userId.addEventListener('blur', () => {
+        const value = userId.value.trim();
+        
+        // Show checking status if input has value
+        if (value.length > 0) {
+            showVerificationModal('checking', 'Checking...');
+            
+            // Start timer for auto-login check
+            typingTimer = setTimeout(() => {
+                processLogin();
+            }, typingDelay);
+        } else {
+            hideVerificationModal();
+            lastProcessedValue = '';
+        }
+    };
+    
+    // INPUT EVENT - for manual typing
+    userId.addEventListener('input', startCheckingWithDelay);
+    
+    // CHANGE EVENT - catches RFID input that might not trigger 'input'
+    userId.addEventListener('change', () => {
+        clearTimeout(typingTimer);
+        const value = userId.value.trim();
+        if (value.length > 0 && value !== lastProcessedValue) {
+            showVerificationModal('checking', 'Checking...');
+            // Shorter delay for change event (likely RFID)
+            setTimeout(() => {
+                processLogin();
+            }, 300);
+        }
+    });
+    
+    // BLUR EVENT - when user clicks away or RFID completes
+    userId.addEventListener('blur', () => {
+        const value = userId.value.trim();
+        if (value.length > 0 && value !== lastProcessedValue) {
+            clearTimeout(typingTimer);
+            processLogin();
+        }
+    });
+    
+    // KEYPRESS EVENT - Handle Enter key
+    userId.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
             const value = userId.value.trim();
             if (value.length > 0) {
                 clearTimeout(typingTimer);
-                handleAutoLogin(value);
+                lastProcessedValue = ''; // Reset to force processing
+                processLogin();
             }
-        });
-        
-        // Handle Enter key press
-        userId.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const value = userId.value.trim();
-                if (value.length > 0) {
-                    clearTimeout(typingTimer);
-                    handleAutoLogin(value);
+        }
+    });
+    
+    // KEYDOWN EVENT - Additional catch for RFID that simulates Enter
+    userId.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission
+            const value = userId.value.trim();
+            if (value.length > 0) {
+                clearTimeout(typingTimer);
+                lastProcessedValue = ''; // Reset to force processing
+                setTimeout(() => {
+                    processLogin();
+                }, 100);
+            }
+        }
+    });
+    
+    // Poll for value changes (backup for RFID readers that don't trigger events)
+    let lastValue = '';
+    const pollInterval = setInterval(() => {
+        const currentValue = userId.value.trim();
+        if (currentValue !== lastValue && currentValue.length > 0) {
+            lastValue = currentValue;
+            // If value changed and it's been stable for 500ms, process it
+            setTimeout(() => {
+                if (userId.value.trim() === currentValue && currentValue !== lastProcessedValue) {
+                    showVerificationModal('checking', 'Checking...');
+                    processLogin();
                 }
-            }
-        });
-    }
+            }, 500);
+        } else if (currentValue.length === 0) {
+            lastValue = '';
+            lastProcessedValue = '';
+        }
+    }, 200);
+    
+    // Clean up polling when leaving page
+    window.addEventListener('beforeunload', () => {
+        clearInterval(pollInterval);
+    });
 }
 
 // Handle Auto Login
@@ -207,6 +284,8 @@ function handleAutoLogin(userId) {
         hideVerificationModal();
         return;
     }
+    
+    console.log('Attempting login for user:', userId);
     
     // Get user from DataStore
     let user = DataStore.getUserById(userId);
@@ -224,9 +303,12 @@ function handleAutoLogin(userId) {
     
     // User not found
     if (!user) {
+        console.error('User not found:', userId);
         showVerificationModal('error', 'User ID not found');
         return;
     }
+    
+    console.log('User found:', user);
     
     // Determine user type
     let userType = user.user_type ? user.user_type.toLowerCase() : '';
@@ -257,6 +339,7 @@ function handleAutoLogin(userId) {
         }, 1000);
         
     } else {
+        console.error('Invalid user type:', userType);
         showVerificationModal('error', 'Invalid user type');
     }
 }
